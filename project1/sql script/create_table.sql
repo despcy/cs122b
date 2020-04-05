@@ -1,3 +1,6 @@
+create SCHEMA moviedb;
+USE moviedb;
+
 create table if not exists stars(
            id varchar(10) primary key not null ,
            name varchar(100) not null,
