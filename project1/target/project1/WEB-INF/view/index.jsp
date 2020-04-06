@@ -5,6 +5,10 @@
 <title>Hello Spring</title>
 </head>
 <body>
-asdfasdf
+Hello to the movie website!
+<!-- construct an "update" link with customer id -->
+<hr>
+
+<a href="movie/list">Top 20 movie list</a>
 </body>
 </html>

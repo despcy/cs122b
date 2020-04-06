@@ -23,13 +23,13 @@ public class MovieController {
 	@RequestMapping("/list")
 	public String listMovies(Model mm) {
 		// the Movie list Page shows the top 20 rated movies, sorted by the rating
-		List<Movie> theMovies =  movieService.getMovies();
+		List<Movie> theMovies =  movieService.getTop20Movies();
 		mm.addAttribute("movies", theMovies);
 		return "movie-list";
 	}
 
 	@RequestMapping("/moviedetail")
-	public String SingleMovie(@RequestParam("movieId") int id, Model mm) {
+	public String SingleMovie(@RequestParam("movieId") String id, Model mm) {
 
 		Movie theMovie =  movieService.movieDetail(id);
 		mm.addAttribute("movie", theMovie);
@@ -37,7 +37,7 @@ public class MovieController {
 	}
 
 	@RequestMapping("/stardetail")
-	public String SingleStar(@RequestParam("starId") int id, Model mm) {
+	public String SingleStar(@RequestParam("starId") String id, Model mm) {
 		Star theStar = movieService.starDetail(id);
 		mm.addAttribute("star", theStar);
 		return "star-detail";

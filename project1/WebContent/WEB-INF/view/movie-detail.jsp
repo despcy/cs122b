@@ -24,7 +24,8 @@ director: ${movie.director}
 genres:
 <ul>
     <c:forEach var="temp" items="${movie.genres}">
-        <li> ${temp} </li>
+
+        <a>${temp.name}</a>
 
     </c:forEach>
 </ul>

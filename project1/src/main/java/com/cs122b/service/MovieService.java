@@ -10,31 +10,51 @@ import java.util.List;
 
 @Service
 public class MovieService {
-   // @Autowired
-   // private DBService dbService;
+    @Autowired
+    private DBService dbService;
+
+
     public List<Movie> getMovies() {
         //top 20 movies
         List<Movie> movies = new ArrayList<Movie>();
 
-        Movie mov=new Movie();
-        mov.setId(123);
-        mov.setTitle("nimaba");
-        movies.add(mov);
 
         return movies;
     }
 
-    //using id to get information from db
-    public Movie movieDetail(int id) {
 
-        Movie theMovie = new Movie();
-        return theMovie;
+    public List<Movie> getTop20Movies() {
+        //top 20 movies
+
+        List<Movie> result=new ArrayList<>();
+        try {
+            result=dbService.getTop20Movies();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+    //using id to get information from db
+    public Movie movieDetail(String id) {
+
+        Movie result=new Movie();
+        try {
+            result=dbService.getMovieByID(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     //using id to get information from db
-    public Star starDetail(int id) {
+    public Star starDetail(String id) {
 
         Star theStar = new Star();
+        try {
+            theStar=dbService.getStarById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return theStar;
     }
 }
