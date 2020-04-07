@@ -16,7 +16,7 @@
 <body>
 <div class='row'>
 <c:forEach var="temp" items="${movies}">
-    <div class="card border-dark col-sm-6" style="max-width: 18rem;">
+    <div class="card border-light col-sm-6" style="max-width: 18rem;">
         <div class="card-header">Title:
             <c:url var="titleLink" value="/movie/moviedetail">
             <c:param name="movieId" value="${temp.id}"/>

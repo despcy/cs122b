@@ -13,10 +13,10 @@
 <body>
 
 <div class="card">
-    <h5 class="card-header">Hello</h5>
+    <h5 class="card-header">Hello! Welcome to the movie website:)</h5>
     <div class="card-body">
-        <h5 class="card-title">This is cs122b project</h5>
-        <p class="card-text">Copyright Chenxi Yang, Jingwen Mo</p>
+        <h5 class="card-title">This is the cs122b project</h5>
+        <p class="card-text">Copyright Chenxi Yang & Jingwen Mo</p>
         <a href="movie/list" class="btn btn-primary">Top 20 movie list</a>
     </div>
 </div>
