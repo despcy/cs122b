@@ -11,13 +11,13 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-    <title>Movie Detail</title>
+    <title>Top 20 Movie List</title>
 </head>
 <body>
 <div class='row'>
 <c:forEach var="temp" items="${movies}">
     <div class="card border-light col-sm-6" style="max-width: 18rem;">
-        <div class="card-header">Title:
+        <div class="card-header">
             <c:url var="titleLink" value="/movie/moviedetail">
             <c:param name="movieId" value="${temp.id}"/>
         </c:url><a href="${titleLink}">${temp.title}</a> </div>
