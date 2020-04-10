@@ -63,6 +63,16 @@
     <build>
         <finalName>project1</finalName>
         <sourceDirectory>src</sourceDirectory>
+       <configuration>
+        <attachClasses>true</attachClasses>
+        <webXml>WebContent/WEB-INF/web.xml</webXml>
+        <webResources>
+            <resource>
+                <directory>src/main/java</directory>
+                <filtering>true</filtering>
+            </resource>
+        </webResources>
+    </configuration>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
