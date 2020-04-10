@@ -28,8 +28,8 @@
 
           <div class="inside-block">
             <img src="assets/images/logo-big.png" alt class="logo">
-            <h1><strong>Welcome</strong> Stranger</h1>
-<!-- 
+            <h1><strong>Welcome</strong> To Our Movie Website</h1>
+<!--
             <form id="form-signin" class="form-signin">
               <section>
                 <div class="input-group">

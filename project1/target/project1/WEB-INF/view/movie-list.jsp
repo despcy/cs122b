@@ -66,7 +66,7 @@
             </div>
           </div>
           <!-- Branding end -->
-          <div class="copyrights">Collect from <a href="https://github.com/yangchenxi"  title="CopyRights">CopyRights Chenxi Yang Jingwen Mo</a></div>
+          <div class="copyrights">Collect from <a href="https://github.com/yangchenxi"  title="CopyRights">CopyRights Chenxi Yang & Jingwen Mo</a></div>
 
 
           <!-- .nav-collapse -->
@@ -114,7 +114,7 @@
                   
                   <li class="active">
                     <a href="/movie/list">
-                      <i class="fa fa-line-chart"></i> Top 20
+                      <i class="fa fa-line-chart"></i> Top 20 Movies
     
                     </a>
                   </li>
@@ -196,9 +196,11 @@
                           <c:forEach var="temp" items="${movies}">
                           <tr>
                             <td>
+                                <strong>
                               <c:url var="titleLink" value="/movie/moviedetail">
                                 <c:param name="movieId" value="${temp.id}"/>
                               </c:url><a href="${titleLink}">${temp.title}</a>
+                            </strong>
                              </td>
                             <td>${temp.year}</td>
                             <td>${temp.director}</td>
@@ -210,6 +212,7 @@
 
                             </td>
                             <td>
+                                <strong>
 
 
                                  <c:forEach var="tempSt" items="${temp.stars}">
@@ -221,7 +224,7 @@
 
                                  </c:forEach>
 
-
+                                </strong>
                             </td>
                             <td>${temp.rating}</td>
                           </tr>
@@ -895,4 +898,3 @@
     </script>
   </body>
 </html>
-

@@ -195,8 +195,9 @@
                              </td>
                             <td>${star.birthYear}</td>
                             <td>
-                                  <c:forEach var="tempMovie" items="${star.movies}">
 
+                                  <c:forEach var="tempMovie" items="${star.movies}">
+                                      <strong>
         <c:url var="titleLink" value="/movie/moviedetail">
             <c:param name="movieId" value="${tempMovie.id}"/>
         </c:url>
@@ -204,6 +205,7 @@
         <li>
             <a href="${titleLink}">${tempMovie.title}&nbsp</a>
         </li>
+                                </strong>
 
     </c:forEach>
 

@@ -208,8 +208,9 @@
     </c:forEach>
                             </td>
                             <td>
-    <c:forEach var="tempStar" items="${movie.stars}">
 
+    <c:forEach var="tempStar" items="${movie.stars}">
+        <strong>
         <li>
         <c:url var="titleLink" value="/movie/stardetail">
             <c:param name="starId" value="${tempStar.id}"/>
@@ -219,6 +220,7 @@
             <a href="${titleLink}">${tempStar.name}&nbsp</a>
 
         </li>
+                                </strong>
 
     </c:forEach>
 
