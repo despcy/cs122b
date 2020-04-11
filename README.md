@@ -3,8 +3,8 @@ cs122b-spring20-team-60 by Jingwen Mo & Chenxi Yang
 
 ## 1. Video
 Here is our video link for our project1:
+youtube: https://www.youtube.com/watch?v=dSH04PNTM_Q
 UCI: https://uci.yuja.com/V/Video?v=978719&node=3879060&a=707441302&autoplay=1
-youtube:(not very clear) https://www.youtube.com/watch?v=dSH04PNTM_Q
 
 ## 2. Instruction of deployment
 1. Clone this repository using git clone https://github.com/UCI-Chenli-teaching/cs122b-spring20-team-60.git
