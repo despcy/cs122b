@@ -1,12 +1,16 @@
 # cs122b-spring20-team-60
 cs122b-spring20-team-60 by Jingwen Mo & Chenxi Yang
 
-## 1. Video
+## 1. Video & Link
 Here is our video link for our project1:
 
 
 youtube: https://www.youtube.com/watch?v=dSH04PNTM_Q or 
 UCI: https://uci.yuja.com/V/Video?v=978719&node=3879060&a=707441302&autoplay=1
+
+Here is our website link:
+
+http://18.188.157.194:8080/
 
 ## 2. Instruction of deployment
 
@@ -19,7 +23,7 @@ Then, run create_table.sql , which create the database and table for you.
 Fianlly, run movie-data.sql , which will insert the data for you.
 
 ### Compile & Run with Maven:
-
+1.
 ```shell
 cd project1
 ./mvnw clean install
@@ -28,5 +32,8 @@ cd project1
 Then you will get the .war file in target folder.
 
 
+2. Copy to Tomcat server. ``cp ./target/*.war /home/ubuntu/tomcat/webapps/ROOT.war``
+
+
 ## 3. Contribution
-In project 1, Jingwen Mo is in charge of the basic frontend and the spring mvc(Controller, Model, View) part in the backend and also communication between frontend and backend. While Chenxi Yang is responsible for the Servelet part, using JDBC to talk to the MySQL database and also took effort to make the UI look nicer, which is really nice btw.
+In project 1, Jingwen Mo is in charge of the frontend and the spring mvc(Controller, Model, View) part in the backend and also communication between frontend and backend. While Chenxi Yang is responsible for the Servelet part, using JDBC to talk to the MySQL database and also took effort to make the UI look nicer, which is really nice btw.
