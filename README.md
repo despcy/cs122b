@@ -2,7 +2,7 @@
 cs122b-spring20-team-60 by Jingwen Mo & Chenxi Yang
 
 ## 1. Video
-Here is our video link for our project1:
+Here is our video link for our project1: https://www.youtube.com/watch?v=dSH04PNTM_Q
 
 ## 2. Instruction of deployment
 1. Clone this repository using git clone https://github.com/UCI-Chenli-teaching/cs122b-spring20-team-60.git
@@ -11,9 +11,6 @@ Go to content cs122b-spring20-team-60/project1/sql script/
 Firstly, run setup.sql , which will create the user for you
 Then, run create_table.sql , which create the database and table for you 
 Fianlly, run movie-data.sql , which will insert the data for you
-
-### Run within IntelliJ
-Since our maven project used Java Spring MVC framework, be sure to use maven and sync the whole project(maven will automatically download the needed spring dependencies for you.
 
 ### Compile&Run with Maven:
 
