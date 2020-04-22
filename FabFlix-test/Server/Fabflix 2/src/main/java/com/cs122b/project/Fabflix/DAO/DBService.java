@@ -166,6 +166,7 @@ public class DBService {
         ArrayList<Movie> m_list = new ArrayList<>();
         String orderByCondition = " ORDER BY movies.title ASC";
         String searchCondition = "where 1=1";
+        String limitCondition = "";
         if (title != null && !title.isEmpty())
         {
             searchCondition = searchCondition +" AND movies.title LIKE \"" + title + "\"";
@@ -185,13 +186,13 @@ public class DBService {
             searchCondition = searchCondition + " AND stars.name = \"" + starName + "\"";
         }
 
-        searchCondition = searchCondition + " LIMIT " + pagesize;
+        limitCondition = limitCondition + " LIMIT " + pagesize;
 
         int offset = 0;
         if (page == 1) offset = 0;
         else
             offset = (page - 1)*pagesize;
-        searchCondition = searchCondition + " OFFSET " + offset + ";";
+        limitCondition = limitCondition + " OFFSET " + offset + ";";
 
         if (order != null && !order.isEmpty())
         {
@@ -212,12 +213,12 @@ public class DBService {
                 orderByCondition = " ORDER BY movies.year DESC";
             }
         }
-        m_list = moviesFetch(searchCondition, orderByCondition);
+        m_list = moviesFetch(searchCondition, orderByCondition, limitCondition);
         Data data = new Data();
         data.setMovies(m_list);
         data.setCurPage(page);
         data.setPagesize(pagesize);
-        data.setTotalPage(page);////////////////////////////////problem!!!!!!!/////////
+        data.setTotalItem(page);////////////////////////////////problem!!!!!!!/////////
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);
@@ -225,7 +226,7 @@ public class DBService {
 
     }
 
-    private ArrayList<Movie> moviesFetch(String searchCondition, String orderByCondition) throws Exception {
+    private ArrayList<Movie> moviesFetch(String searchCondition, String orderByCondition, String limitCondition) throws Exception {
         String sqlquery = "SELECT stars.id, stars.name, stars.birthYear, movies.id, movies.title, movies.year, movies.director, "
                 + "genres.id, genres.name FROM movies "
                 + "INNER JOIN stars_in_movies ON stars_in_movies.movieId = movies.id "
@@ -233,7 +234,8 @@ public class DBService {
                 + "INNER JOIN genres_in_movies ON genres_in_movies.movieId = movies.id "
                 + "INNER JOIN genres ON genres.id = genres_in_movies.genreId "
                 + searchCondition
-                + orderByCondition;
+                + orderByCondition
+                + limitCondition;
         ResultSet q = query(sqlquery);
         HashMap<String, Movie> movieMap = new HashMap<String, Movie>();
 
@@ -298,24 +300,25 @@ public class DBService {
         ArrayList<Movie> m_list = new ArrayList<>();
         String orderByCondition = " ORDER BY movies.title ASC";
         String searchCondition = "where 1=1";
+        String limitCondition = "";
         if (genre != null && !genre.isEmpty())
         {
             searchCondition = searchCondition +" AND genres.name LIKE \"" + genre + "\"";
         }
 
-        searchCondition = searchCondition + " LIMIT " + pagesize;
+        limitCondition = limitCondition + " LIMIT " + pagesize;
 
         int offset = 0;
         if (page == 1) offset = 0;
         else
             offset = (page - 1)*pagesize;
-        searchCondition = searchCondition + " OFFSET " + offset + ";";
+        limitCondition = limitCondition + " OFFSET " + offset + ";";
 
         if (order != null && !order.isEmpty())
         {
             if (order.equals("titleasc"))
             {
-                orderByCondition = " ORDER BY movies.title ASC";
+                orderByCondition = " ORDER BY movies.title ASC;";
             }
             else if (order.equals("titledsc"))
             {
@@ -330,13 +333,13 @@ public class DBService {
                 orderByCondition = " ORDER BY movies.year DESC";
             }
         }
-        m_list = moviesFetch(searchCondition, "");///////////////////////////////test order by error!!!!!!!!!!
+        m_list = moviesFetch(searchCondition, orderByCondition, limitCondition);///////////////////////////////test order by error!!!!!!!!!!
         ///
         Data data = new Data();
         data.setMovies(m_list);
         data.setCurPage(page);
         data.setPagesize(pagesize);
-        data.setTotalPage(page);////////////////////////////////problem!!!!!!!/////////
+        data.setTotalItem(page);////////////////////////////////problem!!!!!!!/////////
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);
@@ -347,18 +350,19 @@ public class DBService {
         ArrayList<Movie> m_list = new ArrayList<>();
         String orderByCondition = " ORDER BY movies.title ASC";
         String searchCondition = "where 1=1";
+        String limitCondition = "";
         if (alphabet != null && !alphabet.isEmpty())
         {
-            searchCondition = searchCondition +" AND movies.title REGEXP '^' \"" + alphabet + "\"";
+            searchCondition = searchCondition +" AND movies.title REGEXP '^' \"" + alphabet.charAt(0) + "\"";
         }
 
-        searchCondition = searchCondition + " LIMIT " + pagesize;
+        limitCondition = limitCondition + " LIMIT " + pagesize;
 
         int offset = 0;
         if (page == 1) offset = 0;
         else
             offset = (page - 1)*pagesize;
-        searchCondition = searchCondition + " OFFSET " + offset + ";";
+        limitCondition = limitCondition + " OFFSET " + offset + ";";
 
         if (order != null && !order.isEmpty())
         {
@@ -379,13 +383,13 @@ public class DBService {
                 orderByCondition = " ORDER BY movies.year DESC";
             }
         }
-        m_list = moviesFetch(searchCondition, orderByCondition);
+        m_list = moviesFetch(searchCondition, orderByCondition, limitCondition);
         ///
         Data data = new Data();
         data.setMovies(m_list);
         data.setCurPage(page);
         data.setPagesize(pagesize);
-        data.setTotalPage(page);////////////////////////////////problem!!!!!!!/////////
+        data.setTotalItem(page);////////////////////////////////problem!!!!!!!/////////
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);
@@ -393,6 +397,16 @@ public class DBService {
     }
 
     //look for all genres sort alphabetical
-//    public ListGenResponse genlist() {
-//    }
+    public ListGenResponse genlist() throws Exception {
+        ResultSet q=query("select * from genres order by ascii(lower(genres.name));");
+        ArrayList<String> genlist =new ArrayList<>();
+        while(q.next()){
+            genlist.add(q.getString(2));
+
+        }
+        ListGenResponse res = new ListGenResponse();
+        res.setMessage(0);
+        res.setData(genlist);
+        return res;
+    }
 }

@@ -9,18 +9,18 @@ import java.util.Map;
 
 public class Data {
 
-    private Integer totalPage;
+    private Integer totalItem;
     private Integer curPage;
     private Integer pagesize;
     private List<Movie> movies = null;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    public Integer getTotalPage() {
-        return totalPage;
+    public Integer getTotalItem() {
+        return totalItem;
     }
 
-    public void setTotalPage(Integer totalPage) {
-        this.totalPage = totalPage;
+    public void setTotalItem(Integer totalPage) {
+        this.totalItem = totalPage;
     }
 
     public Integer getCurPage() {
