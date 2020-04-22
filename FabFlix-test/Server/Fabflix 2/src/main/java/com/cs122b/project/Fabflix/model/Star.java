@@ -22,6 +22,21 @@ public class Star {
         this.movies = movies;
     }
 
+    public Star(String id, String name, int birthYear) {
+        this.id = id;
+        this.name = name;
+        this.birthYear = birthYear;
+    }
+    public void addMovie(Movie movie)
+    {
+        movies.add(movie);
+    }
+
+    public void clearMovies()
+    {
+        movies.clear();
+    }
+
     public String getName() {
         return name;
     }

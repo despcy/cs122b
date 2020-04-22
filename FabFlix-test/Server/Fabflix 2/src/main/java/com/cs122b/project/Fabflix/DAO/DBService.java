@@ -1,5 +1,9 @@
 package com.cs122b.project.Fabflix.DAO;
 
+import com.cs122b.project.Fabflix.Response.Data;
+import com.cs122b.project.Fabflix.Response.ListGenResponse;
+import com.cs122b.project.Fabflix.Response.SearchResponse;
+import com.cs122b.project.Fabflix.model.Customer;
 import com.cs122b.project.Fabflix.model.Genre;
 import com.cs122b.project.Fabflix.model.Movie;
 import com.cs122b.project.Fabflix.model.Star;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -39,8 +44,6 @@ public class DBService {
             System.out.println();
         }
     }
-
-
 
     public Movie getMovieByID(String movieID) throws Exception{
         ResultSet tmp=query("select * from movies where movies.id = \""+ movieID+"\";");
@@ -151,4 +154,245 @@ public class DBService {
         star.setBirthYear(result.getInt("birthYear"));
         return star;
     }
+
+    //under developing...
+    public Customer login(Customer customer) {
+
+        return null;
+    }
+
+    public SearchResponse getSearchResult(String title, String year, String director, String starName, int page, int pagesize,
+                                          String sort, String order) throws Exception {
+        ArrayList<Movie> m_list = new ArrayList<>();
+        String orderByCondition = " ORDER BY movies.title ASC";
+        String searchCondition = "where 1=1";
+        if (title != null && !title.isEmpty())
+        {
+            searchCondition = searchCondition +" AND movies.title LIKE \"" + title + "\"";
+        }
+
+        if (year != null && !year.isEmpty())
+        {
+            searchCondition = searchCondition + " AND movies.year LIKE \"" + year + "\"";
+        }
+
+        if (director != null && !director.isEmpty())
+        {
+            searchCondition = searchCondition + " AND movies.director = \"" + director + "\"";
+        }
+        if (starName != null && !starName.isEmpty())
+        {
+            searchCondition = searchCondition + " AND stars.name = \"" + starName + "\"";
+        }
+
+        searchCondition = searchCondition + " LIMIT " + pagesize;
+
+        int offset = 0;
+        if (page == 1) offset = 0;
+        else
+            offset = (page - 1)*pagesize;
+        searchCondition = searchCondition + " OFFSET " + offset + ";";
+
+        if (order != null && !order.isEmpty())
+        {
+            if (order.equals("titleasc"))
+            {
+                orderByCondition = " ORDER BY movies.title ASC";
+            }
+            else if (order.equals("titledsc"))
+            {
+                orderByCondition = " ORDER BY movies.title DESC";
+            }
+            else if (order.equals("yearasc"))
+            {
+                orderByCondition = " ORDER BY movies.year ASC";
+            }
+            else if (order.equals("yeardsc"))
+            {
+                orderByCondition = " ORDER BY movies.year DESC";
+            }
+        }
+        m_list = moviesFetch(searchCondition, orderByCondition);
+        Data data = new Data();
+        data.setMovies(m_list);
+        data.setCurPage(page);
+        data.setPagesize(pagesize);
+        data.setTotalPage(page);////////////////////////////////problem!!!!!!!/////////
+        SearchResponse sr = new SearchResponse();
+        sr.setMessage(0);
+        sr.setData(data);
+        return sr;
+
+    }
+
+    private ArrayList<Movie> moviesFetch(String searchCondition, String orderByCondition) throws Exception {
+        String sqlquery = "SELECT stars.id, stars.name, stars.birthYear, movies.id, movies.title, movies.year, movies.director, "
+                + "genres.id, genres.name FROM movies "
+                + "INNER JOIN stars_in_movies ON stars_in_movies.movieId = movies.id "
+                + "INNER JOIN stars ON stars_in_movies.starId = stars.id "
+                + "INNER JOIN genres_in_movies ON genres_in_movies.movieId = movies.id "
+                + "INNER JOIN genres ON genres.id = genres_in_movies.genreId "
+                + searchCondition
+                + orderByCondition;
+        ResultSet q = query(sqlquery);
+        HashMap<String, Movie> movieMap = new HashMap<String, Movie>();
+
+        while (q.next())
+        {
+            Star star = new Star(q.getString(1), q.getString(2), q.getInt(3));
+            Genre genre = new Genre(q.getInt(8), q.getString(9));
+
+            if (movieMap.containsKey(q.getString(4)))
+            {
+                Movie movie = movieMap.get(q.getString(4));
+                boolean addStar = true;
+                boolean addGenre = true;
+
+                for (Star existingStar : movie.getStars())
+                {
+                    if (existingStar.getId().equals(star.getId()))
+                    {
+                        addStar = false;
+                    }
+                }
+
+                if (addStar)
+                {
+                    movie.addStar(star);
+                }
+
+                for (Genre existingGenre : movie.getGenres())
+                {
+                    if (existingGenre.getId() == genre.getId())
+                    {
+                        addGenre = false;
+                    }
+                }
+
+                if (addGenre)
+                {
+                    movie.addGenre(genre);
+                }
+
+                movieMap.put(movie.getId(), movie);
+            }
+            else
+            {
+                ArrayList<Genre> genres = new ArrayList<Genre>();
+                genres.add(genre);
+
+                ArrayList<Star> stars = new ArrayList<Star>();
+                stars.add(star);
+
+                Movie movie = new Movie(q.getString(4), q.getString(5), q.getInt(6),
+                        q.getString(7), q.getInt(8),stars,genres);
+                movieMap.put(movie.getId(), movie);
+            }
+        }
+        ArrayList<Movie> movies = new ArrayList<Movie>(movieMap.values());
+        return movies;
+
+    }
+
+    public SearchResponse getGenreSearchResult(String genre, int page, int pagesize, String sort, String order) throws Exception {
+        ArrayList<Movie> m_list = new ArrayList<>();
+        String orderByCondition = " ORDER BY movies.title ASC";
+        String searchCondition = "where 1=1";
+        if (genre != null && !genre.isEmpty())
+        {
+            searchCondition = searchCondition +" AND genres.name LIKE \"" + genre + "\"";
+        }
+
+        searchCondition = searchCondition + " LIMIT " + pagesize;
+
+        int offset = 0;
+        if (page == 1) offset = 0;
+        else
+            offset = (page - 1)*pagesize;
+        searchCondition = searchCondition + " OFFSET " + offset + ";";
+
+        if (order != null && !order.isEmpty())
+        {
+            if (order.equals("titleasc"))
+            {
+                orderByCondition = " ORDER BY movies.title ASC";
+            }
+            else if (order.equals("titledsc"))
+            {
+                orderByCondition = " ORDER BY movies.title DESC";
+            }
+            else if (order.equals("yearasc"))
+            {
+                orderByCondition = " ORDER BY movies.year ASC";
+            }
+            else if (order.equals("yeardsc"))
+            {
+                orderByCondition = " ORDER BY movies.year DESC";
+            }
+        }
+        m_list = moviesFetch(searchCondition, "");///////////////////////////////test order by error!!!!!!!!!!
+        ///
+        Data data = new Data();
+        data.setMovies(m_list);
+        data.setCurPage(page);
+        data.setPagesize(pagesize);
+        data.setTotalPage(page);////////////////////////////////problem!!!!!!!/////////
+        SearchResponse sr = new SearchResponse();
+        sr.setMessage(0);
+        sr.setData(data);
+        return sr;
+    }
+
+    public SearchResponse getAlphaSearchResult(String alphabet, int page, int pagesize, String sort, String order) throws Exception {
+        ArrayList<Movie> m_list = new ArrayList<>();
+        String orderByCondition = " ORDER BY movies.title ASC";
+        String searchCondition = "where 1=1";
+        if (alphabet != null && !alphabet.isEmpty())
+        {
+            searchCondition = searchCondition +" AND movies.title REGEXP '^' \"" + alphabet + "\"";
+        }
+
+        searchCondition = searchCondition + " LIMIT " + pagesize;
+
+        int offset = 0;
+        if (page == 1) offset = 0;
+        else
+            offset = (page - 1)*pagesize;
+        searchCondition = searchCondition + " OFFSET " + offset + ";";
+
+        if (order != null && !order.isEmpty())
+        {
+            if (order.equals("titleasc"))
+            {
+                orderByCondition = " ORDER BY movies.title ASC";
+            }
+            else if (order.equals("titledsc"))
+            {
+                orderByCondition = " ORDER BY movies.title DESC";
+            }
+            else if (order.equals("yearasc"))
+            {
+                orderByCondition = " ORDER BY movies.year ASC";
+            }
+            else if (order.equals("yeardsc"))
+            {
+                orderByCondition = " ORDER BY movies.year DESC";
+            }
+        }
+        m_list = moviesFetch(searchCondition, orderByCondition);
+        ///
+        Data data = new Data();
+        data.setMovies(m_list);
+        data.setCurPage(page);
+        data.setPagesize(pagesize);
+        data.setTotalPage(page);////////////////////////////////problem!!!!!!!/////////
+        SearchResponse sr = new SearchResponse();
+        sr.setMessage(0);
+        sr.setData(data);
+        return sr;
+    }
+
+    //look for all genres sort alphabetical
+//    public ListGenResponse genlist() {
+//    }
 }

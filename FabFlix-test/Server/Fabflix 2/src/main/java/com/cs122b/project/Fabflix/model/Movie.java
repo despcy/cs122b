@@ -31,6 +31,16 @@ public class Movie {
         this.genres = genres;
     }
 
+    public void addGenre(Genre genre)
+    {
+        genres.add(genre);
+    }
+
+    public void addStar(Star star)
+    {
+        stars.add(star);
+    }
+
     public String getTitle() {
         return title;
     }

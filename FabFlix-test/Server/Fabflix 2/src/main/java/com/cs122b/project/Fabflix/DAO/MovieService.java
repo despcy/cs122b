@@ -1,5 +1,9 @@
 package com.cs122b.project.Fabflix.DAO;
 
+import com.cs122b.project.Fabflix.Response.ListGenResponse;
+import com.cs122b.project.Fabflix.Response.MovieResponse;
+import com.cs122b.project.Fabflix.Response.SearchResponse;
+import com.cs122b.project.Fabflix.Response.StarResponse;
 import com.cs122b.project.Fabflix.model.Movie;
 import com.cs122b.project.Fabflix.model.Star;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +18,6 @@ public class MovieService {
     private DBService dbService;
 
 
-    public List<Movie> getMovies() {
-        //top 20 movies
-        List<Movie> movies = new ArrayList<Movie>();
-
-
-        return movies;
-    }
-
-
     public List<Movie> getTop20Movies() {
         //top 20 movies
 
@@ -35,11 +30,12 @@ public class MovieService {
         return result;
     }
     //using id to get information from db
-    public Movie movieDetail(String id) {
+    public MovieResponse movieDetail(String id) {
 
-        Movie result=new Movie();
+        MovieResponse result=new MovieResponse();
+        result.setMessage(0);
         try {
-            result=dbService.getMovieByID(id);
+            result.setMovie(dbService.getMovieByID(id));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,15 +43,59 @@ public class MovieService {
     }
 
     //using id to get information from db
-    public Star starDetail(String id) {
+    public StarResponse starDetail(String id) {
 
-        Star theStar = new Star();
+        StarResponse theStar = new StarResponse();
+        theStar.setMessage(0);
         try {
-            theStar=dbService.getStarById(id);
+            theStar.setStar(dbService.getStarById(id));
         } catch (Exception e) {
             e.printStackTrace();
         }
         return theStar;
+    }
+
+    public SearchResponse search(String title, String year, String director, String starName, int page, int pagesize,
+                                 String sort, String order) {
+        SearchResponse sr = new SearchResponse();
+        List<Movie> result=new ArrayList<>();
+        try {
+            sr=dbService.getSearchResult(title, year, director, starName, page, pagesize, sort, order);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sr;
+    }
+
+    public SearchResponse genreList(String genre, int page, int pagesize, String sort, String order) {
+        SearchResponse sr = new SearchResponse();
+        try {
+            sr=dbService.getGenreSearchResult(genre, page, pagesize, sort, order);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sr;
+    }
+
+    public SearchResponse alphaList(String alphabet, int page, int pagesize, String sort, String order) {
+        SearchResponse sr = new SearchResponse();
+        try {
+            sr=dbService.getAlphaSearchResult(alphabet, page, pagesize, sort, order);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sr;
+    }
+
+    public ListGenResponse genlist() {
+
+        ListGenResponse sr = new ListGenResponse();
+        try {
+            //sr=dbService.genlist();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sr;
     }
 }
 
