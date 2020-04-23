@@ -165,26 +165,27 @@ public class DBService {
     public SearchResponse getSearchResult(String title, String year, String director, String starName, int page, int pagesize,
                                           String sort, String order) throws Exception {
         ArrayList<Movie> m_list = new ArrayList<>();
-        String orderByCondition = " ORDER BY movies.title ASC";
+        String orderByCondition = " ORDER BY movies.title ASC, movies.year ASC";
         String searchCondition = "where 1=1";
         String limitCondition = "";
+        String starCondition = "";
         if (title != null && !title.isEmpty())
         {
-            searchCondition = searchCondition +" AND movies.title LIKE \"" + title + "\"";
+            searchCondition = searchCondition +" AND movies.title LIKE \"%" + title + "%\"";
         }
 
         if (year != null && !year.isEmpty())
         {
-            searchCondition = searchCondition + " AND movies.year LIKE \"" + year + "\"";
+            searchCondition = searchCondition + " AND movies.year = " + year ;
         }
 
         if (director != null && !director.isEmpty())
         {
-            searchCondition = searchCondition + " AND movies.director = \"" + director + "\"";
+            searchCondition = searchCondition + " AND movies.director = \"%" + director + "%\"";
         }
         if (starName != null && !starName.isEmpty())
         {
-            searchCondition = searchCondition + " AND stars.name = \"" + starName + "\"";
+            starCondition = "and id in (select movieId from stars_in_movies where starId in (select id from stars where name like \""+starName+"\"));";
         }
 
         limitCondition = limitCondition + " LIMIT " + pagesize;
@@ -199,22 +200,22 @@ public class DBService {
         {
             if (order.equals("titleasc"))
             {
-                orderByCondition = " ORDER BY movies.title ASC";
+                orderByCondition = " ORDER BY movies.title ASC, movies.year ASC";
             }
             else if (order.equals("titledsc"))
             {
-                orderByCondition = " ORDER BY movies.title DESC";
+                orderByCondition = " ORDER BY movies.title DESC, movies.year desc";
             }
             else if (order.equals("yearasc"))
             {
-                orderByCondition = " ORDER BY movies.year ASC";
+                orderByCondition = " ORDER BY movies.year ASC, movies.title asc";
             }
             else if (order.equals("yeardsc"))
             {
-                orderByCondition = " ORDER BY movies.year DESC";
+                orderByCondition = " ORDER BY movies.year DESC, movies.year desc";
             }
         }
-        m_list = moviesFetch(searchCondition, orderByCondition, limitCondition);
+        m_list = moviesFetch2(searchCondition, orderByCondition, limitCondition,starCondition);
         Data data = new Data();
         data.setMovies(m_list);
         data.setCurPage(page);
@@ -225,6 +226,49 @@ public class DBService {
         sr.setData(data);
         return sr;
 
+    }
+
+    private ArrayList<Movie> moviesFetch2(String searchCondition, String orderByCondition, String limitCondition,String starCondition) throws Exception {
+        //select movieID from movie where
+        String querystr="select * from movies "+searchCondition;
+        if(starCondition!=""){
+            querystr+=starCondition;
+        }
+        querystr +=orderByCondition;
+        querystr+=limitCondition;
+
+
+        ResultSet q=query(querystr);
+        ArrayList<Movie> movies =new ArrayList<>();
+        while(q.next()){
+            ResultSet tmp=query("select * from movies where movies.id = \""+ q.getString("movieId")+"\";");
+            tmp.next();
+            Movie mov=resultToMovie(tmp);
+            tmp=query("select starId from stars_in_movies where movieId = \""+mov.getId()+"\" order by (select count(movieId) from stars_in_movies where stars_in_movies.starId = stars.id) desc limit 3;");
+            ArrayList<Star> stars=new ArrayList<>();
+            while(tmp.next()){
+                ResultSet s=query("select * from stars where id = \""+tmp.getString("starId")+"\";");
+                s.next();
+                stars.add(resultToStar(s));
+            }
+            mov.setStars(stars);
+            tmp=query("select genreId from genres_in_movies where movieId = \""+mov.getId()+"\" order by name asc limit 3;");
+            ArrayList<Genre> genres=new ArrayList<>();
+            while(tmp.next()){
+                ResultSet s=query("select * from genres where id = "+tmp.getInt("genreId")+";");
+                s.next();
+                Genre g=new Genre();
+                g.setId(s.getInt("id"));
+                g.setName(s.getString("name"));
+                genres.add(g);
+            }
+            mov.setGenres(genres);
+            tmp=query("select rating from ratings where movieId = \""+mov.getId()+"\";");
+            tmp.next();
+            mov.setRating(tmp.getFloat("rating"));
+            movies.add(mov);
+        }
+        return movies;
     }
 
     private ArrayList<Movie> moviesFetch(String searchCondition, String orderByCondition, String limitCondition) throws Exception {
