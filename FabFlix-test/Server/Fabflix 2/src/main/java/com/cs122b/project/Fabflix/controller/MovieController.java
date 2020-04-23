@@ -4,10 +4,7 @@ import java.util.List;
 
 import com.cs122b.project.Fabflix.DAO.CustomerService;
 import com.cs122b.project.Fabflix.DAO.MovieService;
-import com.cs122b.project.Fabflix.Response.ListGenResponse;
-import com.cs122b.project.Fabflix.Response.MovieResponse;
-import com.cs122b.project.Fabflix.Response.SearchResponse;
-import com.cs122b.project.Fabflix.Response.StarResponse;
+import com.cs122b.project.Fabflix.Response.*;
 import com.cs122b.project.Fabflix.model.Customer;
 import com.cs122b.project.Fabflix.model.Movie;
 import com.cs122b.project.Fabflix.model.Star;
@@ -77,6 +74,32 @@ public class MovieController {
     public ListGenResponse list_in_alpha(){
         return movieService.genlist();
     }
+
+    @PostMapping("/cart/add")
+    public void addToCart(@RequestParam("movieId") String movieId, @RequestParam("movieTitle") String movieTitle){
+        movieService.addToCart(movieId,movieTitle);
+    }
+
+    @PostMapping("cart/update")
+    public void updateCart(){
+
+    }
+
+    @GetMapping("cart/show")
+    public CartResponse showCart(){
+        return movieService.getCart();
+    }
+
+    @PostMapping("cart/checkout")
+    public CheckoutResponse checkout(@RequestParam("first") String firstname, @RequestParam("last") String lastname,
+                         @RequestParam("number") String number, @RequestParam("movieId") String expire){
+        return movieService.checkoutService(firstname, lastname, number, expire);
+    }
+
+
+
+
+
 
 
 

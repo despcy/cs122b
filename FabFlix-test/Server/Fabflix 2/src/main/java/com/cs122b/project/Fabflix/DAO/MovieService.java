@@ -1,9 +1,6 @@
 package com.cs122b.project.Fabflix.DAO;
 
-import com.cs122b.project.Fabflix.Response.ListGenResponse;
-import com.cs122b.project.Fabflix.Response.MovieResponse;
-import com.cs122b.project.Fabflix.Response.SearchResponse;
-import com.cs122b.project.Fabflix.Response.StarResponse;
+import com.cs122b.project.Fabflix.Response.*;
 import com.cs122b.project.Fabflix.model.Movie;
 import com.cs122b.project.Fabflix.model.Star;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +88,25 @@ public class MovieService {
         ListGenResponse sr = new ListGenResponse();
         try {
             sr=dbService.genlist();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sr;
+    }
+
+    public void addToCart(String movieId, String movieTitle) {
+        //use session to add items to cart
+
+    }
+
+    public CartResponse getCart() {
+        return null;
+    }
+
+    public CheckoutResponse checkoutService(String firstname, String lastname, String number, String expire) {
+        CheckoutResponse sr = new CheckoutResponse();
+        try {
+            sr=dbService.checkout(firstname, lastname, number, expire);
         } catch (Exception e) {
             e.printStackTrace();
         }

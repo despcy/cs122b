@@ -1,5 +1,6 @@
 package com.cs122b.project.Fabflix.DAO;
 
+import com.cs122b.project.Fabflix.Response.CheckoutResponse;
 import com.cs122b.project.Fabflix.Response.Data;
 import com.cs122b.project.Fabflix.Response.ListGenResponse;
 import com.cs122b.project.Fabflix.Response.SearchResponse;
@@ -430,5 +431,16 @@ public class DBService {
         res.setMessage(0);
         res.setData(genlist);
         return res;
+    }
+
+    //check credit card and add to sales
+    public CheckoutResponse checkout(String firstname, String lastname, String number, String expire) throws Exception {
+        CheckoutResponse cr = new CheckoutResponse();
+        String sql = "";
+        ResultSet q1=query(sql);
+
+
+
+        return cr;
     }
 }
