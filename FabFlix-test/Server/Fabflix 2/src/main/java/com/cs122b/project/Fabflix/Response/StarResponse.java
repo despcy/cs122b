@@ -2,6 +2,7 @@ package com.cs122b.project.Fabflix.Response;
 
 import com.cs122b.project.Fabflix.model.Movie;
 import com.cs122b.project.Fabflix.model.Star;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class StarResponse {
     private Integer message;
@@ -15,6 +16,7 @@ public class StarResponse {
         this.message = message;
     }
 
+    @JsonProperty("data")
     public Star getStar() {
         return star;
     }

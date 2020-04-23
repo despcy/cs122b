@@ -1,6 +1,7 @@
 package com.cs122b.project.Fabflix.Response;
 
 import com.cs122b.project.Fabflix.model.Movie;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MovieResponse {
     private Integer message;
@@ -13,7 +14,7 @@ public class MovieResponse {
     public void setMessage(Integer message) {
         this.message = message;
     }
-
+    @JsonProperty("data")
     public Movie getMovie() {
         return movie;
     }

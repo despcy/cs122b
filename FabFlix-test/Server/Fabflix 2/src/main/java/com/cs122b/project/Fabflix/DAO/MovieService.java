@@ -58,7 +58,6 @@ public class MovieService {
     public SearchResponse search(String title, String year, String director, String starName, int page, int pagesize,
                                  String sort, String order) {
         SearchResponse sr = new SearchResponse();
-        List<Movie> result=new ArrayList<>();
         try {
             sr=dbService.getSearchResult(title, year, director, starName, page, pagesize, sort, order);
         } catch (Exception e) {
