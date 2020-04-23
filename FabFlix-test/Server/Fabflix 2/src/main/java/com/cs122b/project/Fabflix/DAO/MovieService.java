@@ -91,7 +91,7 @@ public class MovieService {
 
         ListGenResponse sr = new ListGenResponse();
         try {
-            //sr=dbService.genlist();
+            sr=dbService.genlist();
         } catch (Exception e) {
             e.printStackTrace();
         }

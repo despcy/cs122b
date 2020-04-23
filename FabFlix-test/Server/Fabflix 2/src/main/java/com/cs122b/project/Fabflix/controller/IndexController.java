@@ -9,6 +9,6 @@ public class IndexController {
     @RequestMapping("/")
     public String menu(){
 
-        return "index";
+        return "index.html";
     }
 }
