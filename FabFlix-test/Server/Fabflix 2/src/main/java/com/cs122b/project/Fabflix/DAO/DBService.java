@@ -70,7 +70,7 @@ public class DBService {
         mov.setGenres(genres);
         tmp=query("select rating from ratings where movieId = \""+mov.getId()+"\";");
         tmp.next();
-        mov.setRating(tmp.getFloat("rating"));
+        //mov.setRating(tmp.getFloat(2)); ------bug------
 
         return mov;
     }
@@ -297,73 +297,15 @@ public class DBService {
     }
 
     public SearchResponse getGenreSearchResult(String genre, int page, int pagesize, String sort, String order) throws Exception {
-        ArrayList<Movie> m_list = new ArrayList<>();
         String orderByCondition = " ORDER BY movies.title ASC";
-        String searchCondition = "where 1=1";
         String limitCondition = "";
-        if (genre != null && !genre.isEmpty())
-        {
-            searchCondition = searchCondition +" AND genres.name LIKE \"" + genre + "\"";
-        }
-
-        limitCondition = limitCondition + " LIMIT " + pagesize;
+        limitCondition = limitCondition + " limit " + pagesize;
 
         int offset = 0;
         if (page == 1) offset = 0;
         else
             offset = (page - 1)*pagesize;
         limitCondition = limitCondition + " OFFSET " + offset + ";";
-
-        if (order != null && !order.isEmpty())
-        {
-            if (order.equals("titleasc"))
-            {
-                orderByCondition = " ORDER BY movies.title ASC;";
-            }
-            else if (order.equals("titledsc"))
-            {
-                orderByCondition = " ORDER BY movies.title DESC";
-            }
-            else if (order.equals("yearasc"))
-            {
-                orderByCondition = " ORDER BY movies.year ASC";
-            }
-            else if (order.equals("yeardsc"))
-            {
-                orderByCondition = " ORDER BY movies.year DESC";
-            }
-        }
-        m_list = moviesFetch(searchCondition, orderByCondition, limitCondition);///////////////////////////////test order by error!!!!!!!!!!
-        ///
-        Data data = new Data();
-        data.setMovies(m_list);
-        data.setCurPage(page);
-        data.setPagesize(pagesize);
-        data.setTotalItem(page);////////////////////////////////problem!!!!!!!/////////
-        SearchResponse sr = new SearchResponse();
-        sr.setMessage(0);
-        sr.setData(data);
-        return sr;
-    }
-
-    public SearchResponse getAlphaSearchResult(String alphabet, int page, int pagesize, String sort, String order) throws Exception {
-        ArrayList<Movie> m_list = new ArrayList<>();
-        String orderByCondition = " ORDER BY movies.title ASC";
-        String searchCondition = "where 1=1";
-        String limitCondition = "";
-        if (alphabet != null && !alphabet.isEmpty())
-        {
-            searchCondition = searchCondition +" AND movies.title REGEXP '^' \"" + alphabet.charAt(0) + "\"";
-        }
-
-        limitCondition = limitCondition + " LIMIT " + pagesize;
-
-        int offset = 0;
-        if (page == 1) offset = 0;
-        else
-            offset = (page - 1)*pagesize;
-        limitCondition = limitCondition + " OFFSET " + offset + ";";
-
         if (order != null && !order.isEmpty())
         {
             if (order.equals("titleasc"))
@@ -383,13 +325,93 @@ public class DBService {
                 orderByCondition = " ORDER BY movies.year DESC";
             }
         }
-        m_list = moviesFetch(searchCondition, orderByCondition, limitCondition);
-        ///
+
+        String countSQL = "select count(*) from movies where movies.id in (select movieId from genres_in_movies where genres_in_movies.genreId in (select id from genres where genres.name = \"" + genre + "\" ))";
+        ResultSet q1=query(countSQL);
+        long items = 0;
+        while (q1.next()) {
+        items = q1.getLong(1);
+        System.out.println(items);}
+
+        String sql = "select * from movies where movies.id in (select movieId from genres_in_movies where genres_in_movies.genreId in (select id from genres where genres.name = \"" + genre + "\" ))"
+                + orderByCondition
+                + limitCondition;
+        ResultSet q=query(sql);
+
+        ArrayList<Movie> m_list = new ArrayList<>();
+
+        while (q.next()) {
+            Movie m = getMovieByID(q.getString(1));
+            m_list.add(m);
+        }
+
         Data data = new Data();
         data.setMovies(m_list);
         data.setCurPage(page);
         data.setPagesize(pagesize);
-        data.setTotalItem(page);////////////////////////////////problem!!!!!!!/////////
+        data.setTotalItem(items);
+        SearchResponse sr = new SearchResponse();
+        sr.setMessage(0);
+        sr.setData(data);
+        return sr;
+    }
+
+    public SearchResponse getAlphaSearchResult(String alphabet, int page, int pagesize, String sort, String order) throws Exception {
+
+        String orderByCondition = " ORDER BY movies.title ASC";
+        String limitCondition = "";
+        limitCondition = limitCondition + " limit " + pagesize;
+
+        int offset = 0;
+        if (page == 1) offset = 0;
+        else
+            offset = (page - 1)*pagesize;
+        limitCondition = limitCondition + " OFFSET " + offset + ";";
+        if (order != null && !order.isEmpty())
+        {
+            if (order.equals("titleasc"))
+            {
+                orderByCondition = " ORDER BY movies.title ASC";
+            }
+            else if (order.equals("titledsc"))
+            {
+                orderByCondition = " ORDER BY movies.title DESC";
+            }
+            else if (order.equals("yearasc"))
+            {
+                orderByCondition = " ORDER BY movies.year ASC";
+            }
+            else if (order.equals("yeardsc"))
+            {
+                orderByCondition = " ORDER BY movies.year DESC";
+            }
+        }
+
+        String countSQL = "select count(*) from movies where movies.title REGEXP '^' \"" + alphabet.charAt(0) + "\"";
+        ResultSet q1=query(countSQL);
+
+        long items = 0;
+        while (q1.next()) {
+            items = q1.getLong(1);
+            System.out.println("aaaaaaaaa"+items);}
+
+        String sql = "select * from movies where movies.title REGEXP '^' \"" + alphabet.charAt(0) + "\""
+                + orderByCondition
+                + limitCondition;
+        ResultSet q=query(sql);
+
+        ArrayList<Movie> m_list = new ArrayList<>();
+
+        while (q.next()) {
+            Movie m = getMovieByID(q.getString(1));
+            m_list.add(m);
+        }
+
+        Data data = new Data();
+        data.setMovies(m_list);
+        data.setCurPage(page);
+        data.setPagesize(pagesize);
+        data.setTotalItem(items);
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);

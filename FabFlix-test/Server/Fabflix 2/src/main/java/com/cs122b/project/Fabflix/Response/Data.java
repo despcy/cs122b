@@ -9,17 +9,17 @@ import java.util.Map;
 
 public class Data {
 
-    private Integer totalItem;
+    private long totalItem;
     private Integer curPage;
     private Integer pagesize;
     private List<Movie> movies = null;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    public Integer getTotalItem() {
+    public long getTotalItem() {
         return totalItem;
     }
 
-    public void setTotalItem(Integer totalPage) {
+    public void setTotalItem(long totalPage) {
         this.totalItem = totalPage;
     }
 
