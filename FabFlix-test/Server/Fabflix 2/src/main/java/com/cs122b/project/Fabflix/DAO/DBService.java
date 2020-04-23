@@ -164,6 +164,8 @@ public class DBService {
 
     public SearchResponse getSearchResult(String title, String year, String director, String starName, int page, int pagesize,
                                           String sort, String order) throws Exception {
+
+        System.out.println(title);
         ArrayList<Movie> m_list = new ArrayList<>();
         String orderByCondition = " ORDER BY movies.title ASC, movies.year ASC";
         String searchCondition = "where 1=1";
@@ -196,21 +198,21 @@ public class DBService {
             offset = (page - 1)*pagesize;
         limitCondition = limitCondition + " OFFSET " + offset + ";";
 
-        if (order != null && !order.isEmpty())
+        if (sort != null && !sort.isEmpty())
         {
-            if (order.equals("titleasc"))
+            if (sort.equals("title") && order.equals("asc"))
             {
                 orderByCondition = " ORDER BY movies.title ASC, movies.year ASC";
             }
-            else if (order.equals("titledsc"))
+            else if (sort.equals("title") && order.equals("desc"))
             {
                 orderByCondition = " ORDER BY movies.title DESC, movies.year desc";
             }
-            else if (order.equals("yearasc"))
+            else if (sort.equals("year")&& order.equals("asc"))
             {
                 orderByCondition = " ORDER BY movies.year ASC, movies.title asc";
             }
-            else if (order.equals("yeardsc"))
+            else if (sort.equals("year")&& order.equals("desc"))
             {
                 orderByCondition = " ORDER BY movies.year DESC, movies.year desc";
             }
@@ -231,39 +233,36 @@ public class DBService {
     private ArrayList<Movie> moviesFetch2(String searchCondition, String orderByCondition, String limitCondition,String starCondition) throws Exception {
         //select movieID from movie where
         String querystr="select * from movies "+searchCondition;
+
         if(starCondition!=""){
             querystr+=starCondition;
         }
         querystr +=orderByCondition;
         querystr+=limitCondition;
+        System.out.println(querystr);
 
 
-        ResultSet q=query(querystr);
         ArrayList<Movie> movies =new ArrayList<>();
-        while(q.next()){
-            ResultSet tmp=query("select * from movies where movies.id = \""+ q.getString("movieId")+"\";");
-            tmp.next();
-            Movie mov=resultToMovie(tmp);
-            tmp=query("select starId from stars_in_movies where movieId = \""+mov.getId()+"\" order by (select count(movieId) from stars_in_movies where stars_in_movies.starId = stars.id) desc limit 3;");
-            ArrayList<Star> stars=new ArrayList<>();
-            while(tmp.next()){
-                ResultSet s=query("select * from stars where id = \""+tmp.getString("starId")+"\";");
-                s.next();
-                stars.add(resultToStar(s));
+
+        ResultSet mtmp=query(querystr);
+        while(mtmp.next()) {
+            Movie mov = resultToMovie(mtmp);
+            ResultSet tmp = query("select * from stars where stars.id in (select starId from stars_in_movies where movieId='"+mov.getId()+"') order by (select count(*) from stars_in_movies where stars_in_movies.starId = stars.id) limit 3");
+            ArrayList<Star> stars = new ArrayList<>();
+            while (tmp.next()) {
+                stars.add(resultToStar(tmp));
             }
             mov.setStars(stars);
-            tmp=query("select genreId from genres_in_movies where movieId = \""+mov.getId()+"\" order by name asc limit 3;");
-            ArrayList<Genre> genres=new ArrayList<>();
-            while(tmp.next()){
-                ResultSet s=query("select * from genres where id = "+tmp.getInt("genreId")+";");
-                s.next();
-                Genre g=new Genre();
-                g.setId(s.getInt("id"));
-                g.setName(s.getString("name"));
+            tmp = query("select * from genres where genres.id in (select genreId from genres_in_movies where movieId=\""+mov.getId()+"\") order by name limit 3;");
+            ArrayList<Genre> genres = new ArrayList<>();
+            while (tmp.next()) {
+                Genre g = new Genre();
+                g.setId(tmp.getInt("id"));
+                g.setName(tmp.getString("name"));
                 genres.add(g);
             }
             mov.setGenres(genres);
-            tmp=query("select rating from ratings where movieId = \""+mov.getId()+"\";");
+            tmp = query("select rating from ratings where movieId = \"" + mov.getId() + "\";");
             tmp.next();
             mov.setRating(tmp.getFloat("rating"));
             movies.add(mov);
