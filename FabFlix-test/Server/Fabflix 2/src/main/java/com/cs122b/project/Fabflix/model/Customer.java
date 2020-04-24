@@ -18,6 +18,15 @@ public class Customer {
     public Customer() {
     }
 
+    public Customer(String id, String firstName, String lastName, String address, String email, String password) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.email = email;
+        this.password = password;
+    }
+
     public Customer(String id, String firstName, String lastName, CreditCard creditCard, String address, String email, String password) {
         this.id = id;
         this.firstName = firstName;

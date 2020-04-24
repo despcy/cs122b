@@ -2,15 +2,14 @@ package com.cs122b.project.Fabflix.controller;
 
 import java.util.List;
 
-import com.cs122b.project.Fabflix.DAO.CustomerService;
-import com.cs122b.project.Fabflix.DAO.MovieService;
+import com.cs122b.project.Fabflix.Service.CustomerService;
+import com.cs122b.project.Fabflix.Service.MovieService;
 import com.cs122b.project.Fabflix.Response.*;
-import com.cs122b.project.Fabflix.model.Customer;
 import com.cs122b.project.Fabflix.model.Movie;
-import com.cs122b.project.Fabflix.model.Star;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpSession;
 
 
 @RestController
@@ -40,8 +39,19 @@ public class MovieController {
     }
 
     @PostMapping("/login")
-    public Customer CustomerLogin(@RequestBody Customer customer){
-        return customerService.login(customer);
+    public BaseResponse CustomerLogin(@RequestParam("email")String email, @RequestParam("password") String password,
+                                      HttpSession session) throws Exception {
+        BaseResponse response = movieService.login(email,password);
+        if (response.getMessage() == 0){
+            session.setAttribute(session.getId(),response.getData());
+        }
+        return response;
+    }
+
+    @RequestMapping(value = "/logout")
+    public String logout(HttpSession session){
+        session.removeAttribute(session.getId());
+        return "user logout success";
     }
 
     //Search movie: with substring matching: /api/search?title=t&year=year&director=d&star=s&page=1&pagesize=20&sort=title&order=asc

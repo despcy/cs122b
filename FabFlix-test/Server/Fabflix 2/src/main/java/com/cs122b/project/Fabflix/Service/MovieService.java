@@ -1,8 +1,7 @@
-package com.cs122b.project.Fabflix.DAO;
+package com.cs122b.project.Fabflix.Service;
 
 import com.cs122b.project.Fabflix.Response.*;
 import com.cs122b.project.Fabflix.model.Movie;
-import com.cs122b.project.Fabflix.model.Star;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +13,16 @@ public class MovieService {
     @Autowired
     private DBService dbService;
 
+    public BaseResponse login(String email, String psw) throws Exception {
+        BaseResponse response = new BaseResponse(-1);
+        try {
+            response = dbService.findByAccount(email, psw);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
 
     public List<Movie> getTop20Movies() {
         //top 20 movies
@@ -96,6 +105,8 @@ public class MovieService {
 
     public void addToCart(String movieId, String movieTitle) {
         //use session to add items to cart
+        // Get a instance of current session on the request
+
 
     }
 

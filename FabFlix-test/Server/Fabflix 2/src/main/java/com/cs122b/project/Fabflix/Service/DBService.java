@@ -1,19 +1,13 @@
-package com.cs122b.project.Fabflix.DAO;
+package com.cs122b.project.Fabflix.Service;
 
-import com.cs122b.project.Fabflix.Response.CheckoutResponse;
-import com.cs122b.project.Fabflix.Response.Data;
-import com.cs122b.project.Fabflix.Response.ListGenResponse;
-import com.cs122b.project.Fabflix.Response.SearchResponse;
+import com.cs122b.project.Fabflix.Response.*;
 import com.cs122b.project.Fabflix.model.Customer;
 import com.cs122b.project.Fabflix.model.Genre;
 import com.cs122b.project.Fabflix.model.Movie;
 import com.cs122b.project.Fabflix.model.Star;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
@@ -492,5 +486,21 @@ public class DBService {
 
 
         return cr;
+    }
+
+    public BaseResponse findByAccount(String email, String pwd) throws Exception {
+        BaseResponse response = new BaseResponse(-1);
+
+        String sql = "select * from customers where customers.email = \""+ email +"\" and customers.password = \"" +pwd +"\";";
+        ResultSet q1=query(sql);
+        System.out.println(sql);
+
+        while (q1.next()) {
+            response.setMessage(0);
+            Customer cus = new Customer(q1.getString(1),q1.getString(2),q1.getString(3),
+                     q1.getString(5), q1.getString(6), q1.getString(7));
+            response.setData(cus);
+        }
+        return response;
     }
 }
