@@ -35,12 +35,12 @@ public class SessionConf implements WebMvcConfigurer {
 
 
     //Any other URLs should be redirect to Login Page if not logged in yet!!!!!!!!!!!!!!!
-    @Configuration
-    public class SecurityInterceptor implements HandlerInterceptor {
-        @Override
-        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
-            HttpSession session = request.getSession();
-            return session.getAttribute(session.getId()) != null;
-        }
-    }
+//    @Configuration
+//    public class SecurityInterceptor implements HandlerInterceptor {
+//        @Override
+//        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+//            HttpSession session = request.getSession();
+//            return session.getAttribute(session.getId()) != null;
+//        }
+//    }
 }
