@@ -205,19 +205,19 @@ public class DBService {
         {
             if (sort.equals("title") && order.equals("asc"))
             {
-                orderByCondition = " ORDER BY movies.title ASC, movies.year ASC";
+                orderByCondition = " ORDER BY movies.title ASC, (select rating from ratings where ratings.movieId=movies.id) ASC";
             }
             else if (sort.equals("title") && order.equals("desc"))
             {
-                orderByCondition = " ORDER BY movies.title DESC, movies.year desc";
+                orderByCondition = " ORDER BY movies.title DESC, (select rating from ratings where ratings.movieId=movies.id) desc";
             }
-            else if (sort.equals("year")&& order.equals("asc"))
+            else if (sort.equals("rating")&& order.equals("asc"))
             {
-                orderByCondition = " ORDER BY movies.year ASC, movies.title asc";
+                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) ASC, movies.title asc";
             }
-            else if (sort.equals("year")&& order.equals("desc"))
+            else if (sort.equals("rating")&& order.equals("desc"))
             {
-                orderByCondition = " ORDER BY movies.year DESC, movies.year desc";
+                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) DESC, movies.year desc";
             }
         }
         //pagenation
@@ -231,7 +231,15 @@ public class DBService {
         while (q1.next()) {
             items = q1.getLong(1);}
 
-        m_list = moviesFetch2(searchCondition, orderByCondition, limitCondition,starCondition);
+        querystr="select * from movies "+searchCondition;
+
+        if(starCondition!=""){
+            querystr+=starCondition;
+        }
+        querystr +=orderByCondition;
+        querystr+=limitCondition;
+
+        m_list = moviesFetch2(querystr);
         Data data = new Data();
         data.setMovies(m_list);
         data.setCurPage(page);
@@ -244,15 +252,9 @@ public class DBService {
 
     }
 
-    private ArrayList<Movie> moviesFetch2(String searchCondition, String orderByCondition, String limitCondition,String starCondition) throws Exception {
+    private ArrayList<Movie> moviesFetch2(String querystr) throws Exception {
         //select movieID from movie where
-        String querystr="select * from movies "+searchCondition;
 
-        if(starCondition!=""){
-            querystr+=starCondition;
-        }
-        querystr +=orderByCondition;
-        querystr+=limitCondition;
         System.out.println(querystr);
 
 
@@ -371,19 +373,19 @@ public class DBService {
         {
             if (sort.equals("title") && order.equals("asc"))
             {
-                orderByCondition = " ORDER BY movies.title ASC, movies.year ASC";
+                orderByCondition = " ORDER BY movies.title ASC, (select rating from ratings where ratings.movieId=movies.id) ASC";
             }
             else if (sort.equals("title") && order.equals("desc"))
             {
-                orderByCondition = " ORDER BY movies.title DESC, movies.year desc";
+                orderByCondition = " ORDER BY movies.title DESC, (select rating from ratings where ratings.movieId=movies.id) desc";
             }
-            else if (sort.equals("year")&& order.equals("asc"))
+            else if (sort.equals("rating")&& order.equals("asc"))
             {
-                orderByCondition = " ORDER BY movies.year ASC, movies.title asc";
+                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) ASC, movies.title asc";
             }
-            else if (sort.equals("year")&& order.equals("desc"))
+            else if (sort.equals("rating")&& order.equals("desc"))
             {
-                orderByCondition = " ORDER BY movies.year DESC, movies.year desc";
+                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) DESC, movies.year desc";
             }
         }
 
@@ -397,14 +399,8 @@ public class DBService {
         String sql = "select * from movies where movies.id in (select movieId from genres_in_movies where genres_in_movies.genreId in (select id from genres where genres.name = \"" + genre + "\" ))"
                 + orderByCondition
                 + limitCondition;
-        ResultSet q=query(sql);
 
-        ArrayList<Movie> m_list = new ArrayList<>();
-
-        while (q.next()) {
-            Movie m = getMovieByID(q.getString(1));
-            m_list.add(m);
-        }
+        ArrayList<Movie> m_list = moviesFetch2(sql);
 
         Data data = new Data();
         data.setMovies(m_list);
@@ -459,14 +455,8 @@ public class DBService {
         String sql = "select * from movies where movies.title REGEXP '^' \"" + alphabet.charAt(0) + "\""
                 + orderByCondition
                 + limitCondition;
-        ResultSet q=query(sql);
 
-        ArrayList<Movie> m_list = new ArrayList<>();
-
-        while (q.next()) {
-            Movie m = getMovieByID(q.getString(1));
-            m_list.add(m);
-        }
+        ArrayList<Movie> m_list = moviesFetch2(sql);
 
         Data data = new Data();
         data.setMovies(m_list);
