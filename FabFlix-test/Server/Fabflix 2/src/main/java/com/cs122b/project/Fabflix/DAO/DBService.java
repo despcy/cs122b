@@ -70,8 +70,11 @@ public class DBService {
         }
         mov.setGenres(genres);
         tmp=query("select rating from ratings where movieId = \""+mov.getId()+"\";");
-        tmp.next();
-        //mov.setRating(tmp.getFloat(2)); ------bug------
+        if(tmp.next()) {
+            mov.setRating(tmp.getFloat("rating"));
+        }else{
+            mov.setRating(0.0f);
+        }
 
         return mov;
     }
@@ -217,12 +220,23 @@ public class DBService {
                 orderByCondition = " ORDER BY movies.year DESC, movies.year desc";
             }
         }
+        //pagenation
+        String querystr="select count(*) from movies "+searchCondition;
+
+        if(starCondition!=""){
+            querystr+=starCondition;
+        }
+        ResultSet q1=query(querystr);
+        long items = 0;
+        while (q1.next()) {
+            items = q1.getLong(1);}
+
         m_list = moviesFetch2(searchCondition, orderByCondition, limitCondition,starCondition);
         Data data = new Data();
         data.setMovies(m_list);
         data.setCurPage(page);
         data.setPagesize(pagesize);
-        data.setTotalItem(page);////////////////////////////////problem!!!!!!!/////////
+        data.setTotalItem(items);
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);
@@ -263,8 +277,11 @@ public class DBService {
             }
             mov.setGenres(genres);
             tmp = query("select rating from ratings where movieId = \"" + mov.getId() + "\";");
-            tmp.next();
-            mov.setRating(tmp.getFloat("rating"));
+            if(tmp.next()) {
+                mov.setRating(tmp.getFloat("rating"));
+            }else{
+                mov.setRating(0.0f);
+            }
             movies.add(mov);
         }
         return movies;
@@ -350,23 +367,23 @@ public class DBService {
         else
             offset = (page - 1)*pagesize;
         limitCondition = limitCondition + " OFFSET " + offset + ";";
-        if (order != null && !order.isEmpty())
+        if (sort != null && !sort.isEmpty())
         {
-            if (order.equals("titleasc"))
+            if (sort.equals("title") && order.equals("asc"))
             {
-                orderByCondition = " ORDER BY movies.title ASC";
+                orderByCondition = " ORDER BY movies.title ASC, movies.year ASC";
             }
-            else if (order.equals("titledsc"))
+            else if (sort.equals("title") && order.equals("desc"))
             {
-                orderByCondition = " ORDER BY movies.title DESC";
+                orderByCondition = " ORDER BY movies.title DESC, movies.year desc";
             }
-            else if (order.equals("yearasc"))
+            else if (sort.equals("year")&& order.equals("asc"))
             {
-                orderByCondition = " ORDER BY movies.year ASC";
+                orderByCondition = " ORDER BY movies.year ASC, movies.title asc";
             }
-            else if (order.equals("yeardsc"))
+            else if (sort.equals("year")&& order.equals("desc"))
             {
-                orderByCondition = " ORDER BY movies.year DESC";
+                orderByCondition = " ORDER BY movies.year DESC, movies.year desc";
             }
         }
 
@@ -411,23 +428,23 @@ public class DBService {
         else
             offset = (page - 1)*pagesize;
         limitCondition = limitCondition + " OFFSET " + offset + ";";
-        if (order != null && !order.isEmpty())
+        if (sort != null && !sort.isEmpty())
         {
-            if (order.equals("titleasc"))
+            if (sort.equals("title") && order.equals("asc"))
             {
-                orderByCondition = " ORDER BY movies.title ASC";
+                orderByCondition = " ORDER BY movies.title ASC, (select rating from ratings where ratings.movieId=movies.id) ASC";
             }
-            else if (order.equals("titledsc"))
+            else if (sort.equals("title") && order.equals("desc"))
             {
-                orderByCondition = " ORDER BY movies.title DESC";
+                orderByCondition = " ORDER BY movies.title DESC, (select rating from ratings where ratings.movieId=movies.id) desc";
             }
-            else if (order.equals("yearasc"))
+            else if (sort.equals("rating")&& order.equals("asc"))
             {
-                orderByCondition = " ORDER BY movies.year ASC";
+                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) ASC, movies.title asc";
             }
-            else if (order.equals("yeardsc"))
+            else if (sort.equals("rating")&& order.equals("desc"))
             {
-                orderByCondition = " ORDER BY movies.year DESC";
+                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) DESC, movies.year desc";
             }
         }
 

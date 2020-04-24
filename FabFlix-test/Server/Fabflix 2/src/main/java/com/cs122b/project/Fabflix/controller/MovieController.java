@@ -34,7 +34,7 @@ public class MovieController {
         return movieService.movieDetail(movieId);
     }
 
-    @GetMapping("/stars")
+    @GetMapping("/star")
     public StarResponse SingleStar(@RequestParam("starId") String starId) {
         return movieService.starDetail(starId);
     }
