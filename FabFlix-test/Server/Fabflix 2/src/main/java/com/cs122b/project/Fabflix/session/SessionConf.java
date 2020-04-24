@@ -12,18 +12,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Configuration
 public class SessionConf implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(new SecurityInterceptor())
-//                //排除拦截
-//                .excludePathPatterns("/api/login")
-//                .excludePathPatterns("/api/logout");
+        registry.addInterceptor(new SecurityInterceptor())
+                //排除拦截
+                .excludePathPatterns("/api/login")
+                .excludePathPatterns("/api/logout")
 
                 //拦截路径
-                //.addPathPatterns("/**");
+                .addPathPatterns("/api/**");
     }
 
 //    @Override
@@ -35,12 +36,18 @@ public class SessionConf implements WebMvcConfigurer {
 
 
     //Any other URLs should be redirect to Login Page if not logged in yet!!!!!!!!!!!!!!!
-//    @Configuration
-//    public class SecurityInterceptor implements HandlerInterceptor {
-//        @Override
-//        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
-//            HttpSession session = request.getSession();
-//            return session.getAttribute(session.getId()) != null;
-//        }
-//    }
+    @Configuration
+    public class SecurityInterceptor implements HandlerInterceptor {
+        @Override
+        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+            HttpSession session = request.getSession();
+            //return message -1
+             if(session.getAttribute(session.getId()) == null){
+
+                 response.getWriter().write("{\"message\":-1,\"data\":\"Login First!\"}");
+                 return false;
+             }
+             return true;
+        }
+    }
 }

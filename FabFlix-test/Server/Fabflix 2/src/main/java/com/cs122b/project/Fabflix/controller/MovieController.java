@@ -5,6 +5,7 @@ import java.util.List;
 import com.cs122b.project.Fabflix.Service.CustomerService;
 import com.cs122b.project.Fabflix.Service.MovieService;
 import com.cs122b.project.Fabflix.Response.*;
+import com.cs122b.project.Fabflix.model.Customer;
 import com.cs122b.project.Fabflix.model.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -43,15 +44,22 @@ public class MovieController {
                                       HttpSession session) throws Exception {
         BaseResponse response = movieService.login(email,password);
         if (response.getMessage() == 0){
-            session.setAttribute(session.getId(),response.getData());
+            session.setAttribute(session.getId(),response);
         }
         return response;
     }
+    @RequestMapping(value = "/user")
+    public BaseResponse getUserName(HttpSession session){
+
+
+        return  (BaseResponse) session.getAttribute(session.getId());
+    }
+
 
     @RequestMapping(value = "/logout")
     public String logout(HttpSession session){
         session.removeAttribute(session.getId());
-        return "user logout success";
+        return "{\"message\":-1,\"data\":\"Logout Success!\"}";
     }
 
     //Search movie: with substring matching: /api/search?title=t&year=year&director=d&star=s&page=1&pagesize=20&sort=title&order=asc
