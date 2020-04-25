@@ -7,6 +7,7 @@ import com.cs122b.project.Fabflix.Service.MovieService;
 import com.cs122b.project.Fabflix.Response.*;
 import com.cs122b.project.Fabflix.model.Customer;
 import com.cs122b.project.Fabflix.model.Movie;
+import com.cs122b.project.Fabflix.session.CartSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,7 @@ public class MovieController {
         BaseResponse response = movieService.login(email,password);
         if (response.getMessage() == 0){
             session.setAttribute(session.getId(),response);
+            session.setAttribute("cart",new CartSession());
         }
         return response;
     }
