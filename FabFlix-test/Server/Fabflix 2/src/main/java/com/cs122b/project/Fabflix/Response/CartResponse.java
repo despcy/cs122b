@@ -1,12 +1,20 @@
 package com.cs122b.project.Fabflix.Response;
 
+import com.cs122b.project.Fabflix.model.CartItem;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.ArrayList;
+
 public class CartResponse {
     private Integer message;
-    private String id;
 
-    private String title;
-    private int quantity;
-    private long price;
+
+    private ArrayList<CartItem> cartList;
+
+    public CartResponse(Integer message, ArrayList<CartItem> cartList) {
+        this.message = message;
+        this.cartList = cartList;
+    }
 
     public Integer getMessage() {
         return message;
@@ -16,35 +24,12 @@ public class CartResponse {
         this.message = message;
     }
 
-    public String getId() {
-        return id;
+    @JsonProperty("data")
+    public ArrayList<CartItem> getCartList() {
+        return cartList;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public long getPrice() {
-        return price;
-    }
-
-    public void setPrice(long price) {
-        this.price = price;
+    public void setCartList(ArrayList<CartItem> cartList) {
+        this.cartList = cartList;
     }
 }

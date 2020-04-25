@@ -1,17 +1,21 @@
 package com.cs122b.project.Fabflix.Service;
 
 import com.cs122b.project.Fabflix.Response.*;
-import com.cs122b.project.Fabflix.model.Customer;
-import com.cs122b.project.Fabflix.model.Genre;
-import com.cs122b.project.Fabflix.model.Movie;
-import com.cs122b.project.Fabflix.model.Star;
+import com.cs122b.project.Fabflix.model.*;
 
+import com.cs122b.project.Fabflix.session.CartSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
+import java.util.Date;
+import javax.servlet.http.HttpSession;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -478,13 +482,32 @@ public class DBService {
     }
 
     //check credit card and add to sales
-    public CheckoutResponse checkout(String firstname, String lastname, String number, String expire) throws Exception {
-        CheckoutResponse cr = new CheckoutResponse();
-        String sql = "";
+    public CheckoutResponse checkout(String firstname, String lastname, String number, String expire,
+                                     String userId, HttpSession session) throws Exception {
+        CheckoutResponse cr = new CheckoutResponse(1);
+        cr.setData("fail");
+        String sql = "select * from creditcards where creditcards.id = \"" +number+"\" and  creditcards.firstname = \"" +firstname+"\" and creditcards.lastname = \"" +lastname+"\" and creditcards.expiration = \"" +expire+"\";";
         ResultSet q1=query(sql);
+        while (q1.next()) {
+            cr.setMessage(0);
+            cr.setData("success");
+        }
+        CartSession cs = (CartSession) session.getAttribute("cart");
+        ArrayList<CartItem> cartItems = cs.getCartItems();
+        String sql_add ="INSERT INTO sales (customerId, movieId, saleDate)";
 
+        Date date = Calendar.getInstance().getTime();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String strDate = dateFormat.format(date);
 
+        for (CartItem item: cartItems) {
 
+            String add = " VALUES ( \'"+userId+"\', \'"+item.getMovieId()+"\', \'"+strDate+"\');";
+            System.out.println(sql_add+add);
+            Statement select = connection.createStatement();
+            select.executeUpdate(sql_add+add);
+
+        }
         return cr;
     }
 

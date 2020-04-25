@@ -5,6 +5,7 @@ import com.cs122b.project.Fabflix.model.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,10 +115,11 @@ public class MovieService {
         return null;
     }
 
-    public CheckoutResponse checkoutService(String firstname, String lastname, String number, String expire) {
-        CheckoutResponse sr = new CheckoutResponse();
+    public CheckoutResponse checkoutService(String firstname, String lastname, String number,
+                                            String expire, String userId, HttpSession session) {
+        CheckoutResponse sr = new CheckoutResponse(1);
         try {
-            sr=dbService.checkout(firstname, lastname, number, expire);
+            sr=dbService.checkout(firstname, lastname, number, expire, userId, session);
         } catch (Exception e) {
             e.printStackTrace();
         }

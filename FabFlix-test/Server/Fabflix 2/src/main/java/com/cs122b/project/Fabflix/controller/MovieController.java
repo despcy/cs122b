@@ -1,10 +1,12 @@
 package com.cs122b.project.Fabflix.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cs122b.project.Fabflix.Service.CustomerService;
 import com.cs122b.project.Fabflix.Service.MovieService;
 import com.cs122b.project.Fabflix.Response.*;
+import com.cs122b.project.Fabflix.model.CartItem;
 import com.cs122b.project.Fabflix.model.Customer;
 import com.cs122b.project.Fabflix.model.Movie;
 import com.cs122b.project.Fabflix.session.CartSession;
@@ -96,24 +98,37 @@ public class MovieController {
     }
 
     @PostMapping("/cart/add")
-    public void addToCart(@RequestParam("movieId") String movieId, @RequestParam("movieTitle") String movieTitle){
-        movieService.addToCart(movieId,movieTitle);
+    public String addToCart(@RequestParam("movieId") String movieId, @RequestParam("movieTitle") String movieTitle,
+                          HttpSession session){
+        CartSession cs = (CartSession) session.getAttribute("cart");
+        cs.addItemToCart(movieId, movieTitle, 1);
+        //System.out.println(movieId);
+        return "{\"message\":0,\"data\":\"Add Success!\"}";
     }
 
-    @PostMapping("cart/update")
-    public void updateCart(){
-
+    @PostMapping("/cart/update")
+    public CartResponse updateCart(@RequestBody ArrayList<CartItem> cartList, HttpSession session){
+        System.out.println(cartList.toString());
+        CartSession cs = (CartSession) session.getAttribute("cart");
+        cs.removeAllItemsFromCart();
+        cs.addListToCart(cartList);
+        CartResponse cr = new CartResponse(0, cartList);
+        return cr;
     }
 
-    @GetMapping("cart/show")
-    public CartResponse showCart(){
-        return movieService.getCart();
+    @GetMapping("/cart/show")
+    public CartResponse showCart(HttpSession session){
+        CartSession cs = (CartSession) session.getAttribute("cart");
+        ArrayList<CartItem> cartItems = cs.getCartItems();
+        CartResponse cr = new CartResponse(0, cartItems);
+        return cr;
     }
 
     @PostMapping("cart/checkout")
     public CheckoutResponse checkout(@RequestParam("first") String firstname, @RequestParam("last") String lastname,
-                         @RequestParam("number") String number, @RequestParam("movieId") String expire){
-        return movieService.checkoutService(firstname, lastname, number, expire);
+                         @RequestParam("number") String number, @RequestParam("expire") String expire,
+                                     @RequestParam("userId") String userId, HttpSession session){
+        return movieService.checkoutService(firstname, lastname, number, expire, userId, session);
     }
 
 

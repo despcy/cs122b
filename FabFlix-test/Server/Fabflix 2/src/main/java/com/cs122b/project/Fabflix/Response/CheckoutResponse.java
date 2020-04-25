@@ -4,6 +4,10 @@ public class CheckoutResponse {
     private Integer message;
     private String data;
 
+    public CheckoutResponse(Integer message) {
+        this.message = message;
+    }
+
     public Integer getMessage() {
         return message;
     }

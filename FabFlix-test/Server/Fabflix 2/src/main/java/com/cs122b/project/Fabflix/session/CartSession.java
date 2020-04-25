@@ -5,6 +5,7 @@ import com.cs122b.project.Fabflix.model.Movie;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class CartSession {
     private HashMap<String, CartItem> cartItems;//<movie-id, cart>
@@ -14,18 +15,26 @@ public class CartSession {
         cartItems = new HashMap<String, CartItem>();
     }
 
-    public CartItem addItemToCart(Movie movie, int quantity)
+    public void addListToCart(ArrayList<CartItem> cartList) {
+        for(CartItem item:cartList) {
+            //add to session
+            cartItems.put(item.getMovieId(), item);
+        }
+    }
+
+    public CartItem addItemToCart(String movieId, String title, int quantity)
     {
-        if (cartItems.containsKey(movie.getId()))
+        Random rand = new Random();
+        if (cartItems.containsKey(movieId))
         {
-            CartItem existingItem = cartItems.get(movie.getId());
+            CartItem existingItem = cartItems.get(movieId);
             existingItem.addQuantity(quantity);
             return existingItem;
         }
         else
         {
-            CartItem cartItem = new CartItem(movie, quantity);
-            cartItems.put(movie.getId(), cartItem);
+            CartItem cartItem = new CartItem(movieId, title, rand.nextInt(1000) ,quantity);
+            cartItems.put(movieId, cartItem);
             return cartItem;
         }
     }
@@ -39,15 +48,6 @@ public class CartSession {
         }
     }
 
-    public void updateQuantityOfItemInCart(Movie movie, int quantity)
-    {
-        if (cartItems.containsKey(movie.getId()))
-        {
-            CartItem existingItem = cartItems.get(movie.getId());
-            existingItem.setQuantity(quantity);
-        }
-    }
-
     public void removeItemFromCart(CartItem item)
     {
         if (cartItems.containsKey(item.getMovieId()))
@@ -56,22 +56,10 @@ public class CartSession {
         }
     }
 
-    public void removeItemFromCart(Movie movie)
-    {
-        if (cartItems.containsKey(movie.getId()))
-        {
-            cartItems.remove(movie.getId());
-        }
-    }
 
     public void removeAllItemsFromCart()
     {
         cartItems.clear();
-    }
-
-    public boolean containsItemForMovie(Movie movie)
-    {
-        return (cartItems.containsKey(movie.getId()));
     }
 
     public ArrayList<CartItem> getCartItems()

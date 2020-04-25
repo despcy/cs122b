@@ -1,44 +1,51 @@
 package com.cs122b.project.Fabflix.model;
 
 public class CartItem {
-    private Movie movie;
+    private String movieId;
+    private String title;
+    private  int price;
     private int quantity;
 
-    public CartItem(Movie movie, int quantity)
-    {
-        super();
-
-        this.movie = movie;
+    public CartItem(String movieId, String title, int price, int quantity) {
+        this.movieId = movieId;
+        this.title = title;
+        this.price = price;
         this.quantity = quantity;
     }
 
-    public Movie getMovie()
-    {
-        return movie;
+    public String getMovieId() {
+        return movieId;
     }
 
-    public void setMovie(Movie movie)
-    {
-        this.movie = movie;
+    public void setMovieId(String movieId) {
+        this.movieId = movieId;
     }
 
-    public int getQuantity()
-    {
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity)
-    {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-    public void addQuantity(int quantity)
-    {
+    public void addQuantity(int quantity) {
         this.quantity += quantity;
-    }
-
-    public String getMovieId()
-    {
-        return movie.getId();
     }
 }
