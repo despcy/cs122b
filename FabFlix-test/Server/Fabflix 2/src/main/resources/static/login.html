@@ -69,7 +69,7 @@
            success: function(data)
            {
                if(data.message == -1){
-               	alert('Auth Failed!');
+               	alert('Auth Failed! Incorrect Password Or Username');
                }else if(data.message == 0){
                	window.location.href="/";
                }else{
