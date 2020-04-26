@@ -485,29 +485,37 @@ public class DBService {
     public CheckoutResponse checkout(String firstname, String lastname, String number, String expire,
                                      String userId, HttpSession session) throws Exception {
         CheckoutResponse cr = new CheckoutResponse(1);
-        cr.setData("fail");
         String sql = "select * from creditcards where creditcards.id = \"" +number+"\" and  creditcards.firstname = \"" +firstname+"\" and creditcards.lastname = \"" +lastname+"\" and creditcards.expiration = \"" +expire+"\";";
         ResultSet q1=query(sql);
         while (q1.next()) {
             cr.setMessage(0);
-            cr.setData("success");
         }
         CartSession cs = (CartSession) session.getAttribute("cart");
         ArrayList<CartItem> cartItems = cs.getCartItems();
+        cr.setCartList(cartItems);
         String sql_add ="INSERT INTO sales (customerId, movieId, saleDate)";
 
         Date date = Calendar.getInstance().getTime();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String strDate = dateFormat.format(date);
 
+        ArrayList<String> sid = new ArrayList<>();
+
         for (CartItem item: cartItems) {
 
             String add = " VALUES ( \'"+userId+"\', \'"+item.getMovieId()+"\', \'"+strDate+"\');";
-            System.out.println(sql_add+add);
+            //System.out.println(sql_add+add);
             Statement select = connection.createStatement();
-            select.executeUpdate(sql_add+add);
 
+            int quantity = item.getQuantity();
+            for (int i = 0; i < quantity; i++){
+                int id = select.executeUpdate(sql_add+add, select.RETURN_GENERATED_KEYS);
+                sid.add(Integer.toString(id));
+            }
+            item.setSid(sid);
         }
+
+        cs.removeAllItemsFromCart();
         return cr;
     }
 

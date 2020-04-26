@@ -1,8 +1,14 @@
 package com.cs122b.project.Fabflix.Response;
 
+import com.cs122b.project.Fabflix.model.CartItem;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.ArrayList;
+
 public class CheckoutResponse {
     private Integer message;
-    private String data;
+
+    private ArrayList<CartItem> cartList;
 
     public CheckoutResponse(Integer message) {
         this.message = message;
@@ -16,11 +22,12 @@ public class CheckoutResponse {
         this.message = message;
     }
 
-    public String getData() {
-        return data;
+    @JsonProperty("data")
+    public ArrayList<CartItem> getCartList() {
+        return cartList;
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public void setCartList(ArrayList<CartItem> cartList) {
+        this.cartList = cartList;
     }
 }
