@@ -480,8 +480,14 @@ public class DBService {
         CheckoutResponse cr = new CheckoutResponse(1);
         String sql = "select * from creditcards where creditcards.id = \"" +number+"\" and  creditcards.firstname = \"" +firstname+"\" and creditcards.lastname = \"" +lastname+"\" and creditcards.expiration = \"" +expire+"\";";
         ResultSet q1=query(sql);
+        boolean flag=false;
         while (q1.next()) {
             cr.setMessage(0);
+            flag=true;
+        }
+        if(!flag){
+            //false info
+            return cr;
         }
         CartSession cs = (CartSession) session.getAttribute("cart");
         ArrayList<CartItem> cartItems = cs.getCartItems();
