@@ -45,42 +45,19 @@ public class DBService {
     }
 
     public Movie getMovieByID(String movieID) throws Exception{
-        ResultSet tmp=query("select * from movies where movies.id = \""+ movieID+"\";");
-        tmp.next();
-        Movie mov=resultToMovie(tmp);
-        tmp=query("select starId from stars_in_movies where movieId = \""+mov.getId()+"\";");
-        ArrayList<Star> stars=new ArrayList<>();
-        while(tmp.next()){
-            ResultSet s=query("select * from stars where id = \""+tmp.getString("starId")+"\";");
-            s.next();
-            stars.add(resultToStar(s));
+        String query="select * from movies where movies.id = '"+movieID+"'";
+        ArrayList<Movie> result=moviesFetch2(query,false);
+        if(result.size()>0){
+            return result.get(0);
         }
-        mov.setStars(stars);
-        tmp=query("select genreId from genres_in_movies where movieId = \""+mov.getId()+"\";");
-        ArrayList<Genre> genres=new ArrayList<>();
-        while(tmp.next()){
-            ResultSet s=query("select * from genres where id = "+tmp.getInt("genreId")+";");
-            s.next();
-            Genre g=new Genre();
-            g.setId(s.getInt("id"));
-            g.setName(s.getString("name"));
-            genres.add(g);
-        }
-        mov.setGenres(genres);
-        tmp=query("select rating from ratings where movieId = \""+mov.getId()+"\";");
-        if(tmp.next()) {
-            mov.setRating(tmp.getFloat("rating"));
-        }else{
-            mov.setRating(0.0f);
-        }
-
-        return mov;
+        return new Movie();
     }
 
     private ResultSet query(String queryStr) throws Exception{
         // Create an execute an SQL statement to select all of table"Stars" records
         Statement select = connection.createStatement();
         String query = queryStr;
+        System.out.println(query);
         ResultSet result = select.executeQuery(query);
 
         // Get metatdata from stars; print # of attributes in table
@@ -137,7 +114,7 @@ public class DBService {
 
 
     public Star getStarById(String starId) throws Exception{
-        ResultSet result=query("select * from movies where movies.id in (select movieId from stars_in_movies where starId = \""+starId+"\");");
+        ResultSet result=query("select * from movies where movies.id in (select movieId from stars_in_movies where starId = \""+starId+"\") order by movies.year desc, movies.title asc");
         List<Movie> movs=new ArrayList<>();
         while(result.next()){
             movs.add(resultToMovie(result));
@@ -188,7 +165,7 @@ public class DBService {
         }
         if (starName != null && !starName.isEmpty())
         {
-            starCondition = "and id in (select movieId from stars_in_movies where starId in (select id from stars where name like \""+starName+"\"));";
+            starCondition = "and id in (select movieId from stars_in_movies where starId in (select id from stars where name like %\""+starName+"\"%));";
         }
 
         limitCondition = limitCondition + " LIMIT " + pagesize;
@@ -237,7 +214,7 @@ public class DBService {
         querystr +=orderByCondition;
         querystr+=limitCondition;
 
-        m_list = moviesFetch2(querystr);
+        m_list = moviesFetch2(querystr,true);
         Data data = new Data();
         data.setMovies(m_list);
         data.setCurPage(page);
@@ -250,7 +227,7 @@ public class DBService {
 
     }
 
-    private ArrayList<Movie> moviesFetch2(String querystr) throws Exception {
+    private ArrayList<Movie> moviesFetch2(String querystr,Boolean limit) throws Exception {
         //select movieID from movie where
 
         System.out.println(querystr);
@@ -261,13 +238,24 @@ public class DBService {
         ResultSet mtmp=query(querystr);
         while(mtmp.next()) {
             Movie mov = resultToMovie(mtmp);
-            ResultSet tmp = query("select * from stars where stars.id in (select starId from stars_in_movies where movieId='"+mov.getId()+"') order by (select count(*) from stars_in_movies where stars_in_movies.starId = stars.id) limit 3");
+            String q;
+            if(limit){
+                q="select * from stars where stars.id in (select starId from stars_in_movies where movieId='"+mov.getId()+"') order by (select count(*) from stars_in_movies where stars_in_movies.starId = stars.id) desc , stars.name asc limit 3";
+            }else{
+                q="select * from stars where stars.id in (select starId from stars_in_movies where movieId='"+mov.getId()+"') order by (select count(*) from stars_in_movies where stars_in_movies.starId = stars.id) desc , stars.name asc";
+            }
+            ResultSet tmp = query(q);
             ArrayList<Star> stars = new ArrayList<>();
             while (tmp.next()) {
                 stars.add(resultToStar(tmp));
             }
             mov.setStars(stars);
-            tmp = query("select * from genres where genres.id in (select genreId from genres_in_movies where movieId=\""+mov.getId()+"\") order by name limit 3;");
+            if(limit) {
+                tmp = query("select * from genres where genres.id in (select genreId from genres_in_movies where movieId=\"" + mov.getId() + "\") order by name asc limit 3;");
+            }else{
+                tmp = query("select * from genres where genres.id in (select genreId from genres_in_movies where movieId=\"" + mov.getId() + "\") order by name asc;");
+
+            }
             ArrayList<Genre> genres = new ArrayList<>();
             while (tmp.next()) {
                 Genre g = new Genre();
@@ -398,7 +386,7 @@ public class DBService {
                 + orderByCondition
                 + limitCondition;
 
-        ArrayList<Movie> m_list = moviesFetch2(sql);
+        ArrayList<Movie> m_list = moviesFetch2(sql,true);
 
         Data data = new Data();
         data.setMovies(m_list);
@@ -454,7 +442,7 @@ public class DBService {
                 + orderByCondition
                 + limitCondition;
 
-        ArrayList<Movie> m_list = moviesFetch2(sql);
+        ArrayList<Movie> m_list = moviesFetch2(sql,true);
 
         Data data = new Data();
         data.setMovies(m_list);
@@ -509,10 +497,19 @@ public class DBService {
 
             int quantity = item.getQuantity();
             for (int i = 0; i < quantity; i++){
-                int id = select.executeUpdate(sql_add+add, select.RETURN_GENERATED_KEYS);
-                sid.add(Integer.toString(id));
+                select.executeUpdate(sql_add+add, select.RETURN_GENERATED_KEYS);
+                try (ResultSet generatedKeys = select.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        sid.add(Long.toString(generatedKeys.getLong(1)));
+                    }
+                    else {
+                        throw new SQLException("Creating user failed, no ID obtained.");
+                    }
+                }
+
             }
             item.setSid(sid);
+            sid=new ArrayList<>();
         }
 
         cs.removeAllItemsFromCart();
