@@ -1,5 +1,5 @@
-**/.DS_Store
-**/.idea/
+.DS_Store
+.idea
 movie-data.sql
 *.war
 **/target/
