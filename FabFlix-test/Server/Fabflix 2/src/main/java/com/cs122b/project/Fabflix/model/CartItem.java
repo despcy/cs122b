@@ -1,5 +1,8 @@
 package com.cs122b.project.Fabflix.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 
 public class CartItem {
@@ -7,7 +10,12 @@ public class CartItem {
     private String title;
     private  int price;
     private int quantity;
-    private ArrayList<String> sid;
+    @JsonProperty("sid")
+    private ArrayList<String> sid=new ArrayList<>();
+
+    public CartItem(){
+
+    }
 
     public CartItem(String movieId, String title, int price, int quantity) {
         this.movieId = movieId;
