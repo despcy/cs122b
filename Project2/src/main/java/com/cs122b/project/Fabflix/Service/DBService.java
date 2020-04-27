@@ -430,7 +430,12 @@ public class DBService {
             }
         }
 
-        String countSQL = "select count(*) from movies where movies.title REGEXP '^' \"" + alphabet.charAt(0) + "\"";
+
+        if(alphabet.charAt(0)=='*'){
+          alphabet="^[^a-z0-9]";   
+        }
+        String countSQL = "select count(*) from movies where movies.title REGEXP '^' \"" + alphabet + "\"";
+        
         ResultSet q1=query(countSQL);
 
         long items = 0;
@@ -438,7 +443,7 @@ public class DBService {
             items = q1.getLong(1);
             System.out.println("aaaaaaaaa"+items);}
 
-        String sql = "select * from movies where movies.title REGEXP '^' \"" + alphabet.charAt(0) + "\""
+        String sql = "select * from movies where movies.title REGEXP '^' \"" + alphabet + "\""
                 + orderByCondition
                 + limitCondition;
 
