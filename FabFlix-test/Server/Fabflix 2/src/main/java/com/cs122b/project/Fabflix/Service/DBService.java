@@ -161,11 +161,11 @@ public class DBService {
 
         if (director != null && !director.isEmpty())
         {
-            searchCondition = searchCondition + " AND movies.director = \"%" + director + "%\"";
+            searchCondition = searchCondition + " AND movies.director like \"%" + director + "%\"";
         }
         if (starName != null && !starName.isEmpty())
         {
-            starCondition = "and id in (select movieId from stars_in_movies where starId in (select id from stars where name like %\""+starName+"\"%));";
+            starCondition = " and id in (select distinct movieId from stars_in_movies inner join stars on stars_in_movies.starId = stars.id where name like '%"+starName+"%')";
         }
 
         limitCondition = limitCondition + " LIMIT " + pagesize;
