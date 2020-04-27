@@ -145,7 +145,7 @@ public class DBService {
 
         System.out.println(title);
         ArrayList<Movie> m_list = new ArrayList<>();
-        String orderByCondition = " ORDER BY movies.title ASC, movies.year ASC";
+        String orderByCondition = "";
         String searchCondition = "where 1=1";
         String limitCondition = "";
         String starCondition = "";
@@ -175,24 +175,32 @@ public class DBService {
         else
             offset = (page - 1)*pagesize;
         limitCondition = limitCondition + " OFFSET " + offset + ";";
-
         if (sort != null && !sort.isEmpty())
         {
-            if (sort.equals("title") && order.equals("asc"))
-            {
-                orderByCondition = " ORDER BY movies.title ASC, (select rating from ratings where ratings.movieId=movies.id) ASC";
+            String ord1="asc";
+            String ord2="desc";
+            if(order.equals("asc_asc")){
+                ord1="asc";
+                ord2="asc";
+            }else if(order.equals("asc_desc")){
+                ord1="asc";
+                ord2="desc";
+            }else if(order.equals("desc_asc")){
+                ord1="desc";
+                ord2="asc";
             }
-            else if (sort.equals("title") && order.equals("desc"))
-            {
-                orderByCondition = " ORDER BY movies.title DESC, (select rating from ratings where ratings.movieId=movies.id) desc";
+            else if(order.equals("desc_desc")){
+                ord1="desc";
+                ord2="desc";
             }
-            else if (sort.equals("rating")&& order.equals("asc"))
+
+            if (sort.equals("title_rating"))
             {
-                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) ASC, movies.title asc";
+                orderByCondition = " ORDER BY movies.title "+ord1+" , (select rating from ratings where ratings.movieId=movies.id) "+ ord2;
             }
-            else if (sort.equals("rating")&& order.equals("desc"))
+            else if (sort.equals("rating_title"))
             {
-                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) DESC, movies.year desc";
+                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) "+ord1+" , movies.title "+ ord2;
             }
         }
         //pagenation
@@ -357,21 +365,30 @@ public class DBService {
         limitCondition = limitCondition + " OFFSET " + offset + ";";
         if (sort != null && !sort.isEmpty())
         {
-            if (sort.equals("title") && order.equals("asc"))
-            {
-                orderByCondition = " ORDER BY movies.title ASC, (select rating from ratings where ratings.movieId=movies.id) ASC";
+            String ord1="asc";
+            String ord2="desc";
+            if(order.equals("asc_asc")){
+                ord1="asc";
+                ord2="asc";
+            }else if(order.equals("asc_desc")){
+                ord1="asc";
+                ord2="desc";
+            }else if(order.equals("desc_asc")){
+                ord1="desc";
+                ord2="asc";
             }
-            else if (sort.equals("title") && order.equals("desc"))
-            {
-                orderByCondition = " ORDER BY movies.title DESC, (select rating from ratings where ratings.movieId=movies.id) desc";
+            else if(order.equals("desc_desc")){
+                ord1="desc";
+                ord2="desc";
             }
-            else if (sort.equals("rating")&& order.equals("asc"))
+
+            if (sort.equals("title_rating"))
             {
-                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) ASC, movies.title asc";
+                orderByCondition = " ORDER BY movies.title "+ord1+" , (select rating from ratings where ratings.movieId=movies.id) "+ ord2;
             }
-            else if (sort.equals("rating")&& order.equals("desc"))
+            else if (sort.equals("rating_title"))
             {
-                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) DESC, movies.year desc";
+                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) "+ord1+" , movies.title "+ ord2;
             }
         }
 
@@ -412,29 +429,37 @@ public class DBService {
         limitCondition = limitCondition + " OFFSET " + offset + ";";
         if (sort != null && !sort.isEmpty())
         {
-            if (sort.equals("title") && order.equals("asc"))
-            {
-                orderByCondition = " ORDER BY movies.title ASC, (select rating from ratings where ratings.movieId=movies.id) ASC";
+            String ord1="asc";
+            String ord2="desc";
+            if(order.equals("asc_asc")){
+                ord1="asc";
+                ord2="asc";
+            }else if(order.equals("asc_desc")){
+                ord1="asc";
+                ord2="desc";
+            }else if(order.equals("desc_asc")){
+                ord1="desc";
+                ord2="asc";
             }
-            else if (sort.equals("title") && order.equals("desc"))
-            {
-                orderByCondition = " ORDER BY movies.title DESC, (select rating from ratings where ratings.movieId=movies.id) desc";
+            else if(order.equals("desc_desc")){
+                ord1="desc";
+                ord2="desc";
             }
-            else if (sort.equals("rating")&& order.equals("asc"))
+
+            if (sort.equals("title_rating"))
             {
-                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) ASC, movies.title asc";
+                orderByCondition = " ORDER BY movies.title "+ord1+" , (select rating from ratings where ratings.movieId=movies.id) "+ ord2;
             }
-            else if (sort.equals("rating")&& order.equals("desc"))
+            else if (sort.equals("rating_title"))
             {
-                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) DESC, movies.year desc";
+                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) "+ord1+" , movies.title "+ ord2;
             }
         }
-
 
         if(alphabet.charAt(0)=='*'){
           alphabet="^[^a-z0-9]";   
         }
-        String countSQL = "select count(*) from movies where movies.title REGEXP '^' \"" + alphabet + "\"";
+        String countSQL = "select count(*) from movies where movies.title REGEXP '^"+alphabet + "'";
         
         ResultSet q1=query(countSQL);
 
@@ -443,7 +468,7 @@ public class DBService {
             items = q1.getLong(1);
             System.out.println("aaaaaaaaa"+items);}
 
-        String sql = "select * from movies where movies.title REGEXP '^' \"" + alphabet + "\""
+        String sql = "select * from movies where movies.title REGEXP '^"+alphabet + "'"
                 + orderByCondition
                 + limitCondition;
 
