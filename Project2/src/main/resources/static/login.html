@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fablix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Bootstrap -->
+  <link href="assets/css/vendor/bootstrap/bootstrap.min.css" rel="stylesheet"><link href="assets/css/font-awesome.min.css" rel="stylesheet">
+ 
+    <link rel="stylesheet" href="assets/css/vendor/bootstrap-checkbox.css">
+
+    <link href="assets/css/minimal.css" rel="stylesheet">
+
+  <link href="assets/css/vendor/bootstrap/bootstrap.min.css" rel="stylesheet"><link href="assets/css/font-awesome.min.css" rel="stylesheet">
+  </head>
+  <body class="bg-1">
+ 
+
+    <!-- Wrap all page content here -->
+    <div id="wrap">
+      <!-- Make page fluid -->
+      <div class="row">
+        <!-- Page content -->
+        <div id="content" class="col-md-12 full-page login">
+
+
+          <div class="inside-block">
+            <img src="assets/images/logo-big.png" alt class="logo">
+            <h1><strong>Welcome</strong> To Our Movie Website</h1>
+
+            <form id="form-signin" class="form-signin">
+              <section>
+                <div class="input-group">
+                  <input type="text" class="form-control" name="email" placeholder="Email">
+                  <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                </div>
+                <div class="input-group">
+                  <input type="password" class="form-control" name="password" placeholder="Password">
+                  <div class="input-group-addon"><i class="fa fa-key"></i></div>
+                </div>
+              </section>
+              <section class="log-in">
+                <button class="btn btn-greensea">Log In</button>
+              </section>
+            </form> 
+
+          </div>
+
+
+        </div>
+        <!-- /Page content -->  
+      </div>
+    </div>
+    <!-- Wrap all page content end -->
+
+    <script type="text/javascript">
+    	$("#form-signin").submit(function(e) {
+
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+    var form = $(this);
+    var url = form.attr('action');
+    $.ajax({
+           type: "POST",
+           url: "/api/login",
+           data: form.serialize(), // serializes the form's elements.
+           success: function(data)
+           {
+               if(data.message == -1){
+               	alert('Auth Failed! Incorrect Password Or Username');
+               }else if(data.message == 0){
+               	window.location.href="/";
+               }else{
+               	alert('Unknown ERROR!');
+               }
+           }
+         });
+
+
+});
+    </script>
+  </body>
+</html>
