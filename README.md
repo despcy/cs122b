@@ -12,6 +12,13 @@ cs122b-spring20-team-60 created by GitHub Classroom
 
 **Index creation:**
 
+```sql
+use moviedb;
+CREATE INDEX movietitle ON movies (title);
+CREATE INDEX moviedirector ON movies (director);
+CREATE INDEX starname ON stars (name);
+```
+
 **Query:**
 
 ```sql
