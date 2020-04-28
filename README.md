@@ -3,7 +3,7 @@ cs122b-spring20-team-60 created by GitHub Classroom
 
 ## DemoURL:
 
-Website: http://18.188.106.209:8080/
+Website: http://18.188.106.209:8080/ 
 Video: https://youtu.be/lAAsxAHhy08
 
 ## deployment instr:
@@ -36,7 +36,7 @@ This is our api design document. Our front end and back end communicate base on 
 
 
 ## contribution
-In this project 2,
+
 Jingwen Mo:
 1. Refactoring the back end stucture from original Spring MVC(project 1) to Spring boot & RESTful
 2. Design api and implement the back end using Spring boot, Spring MVC and REST and also develop all the database operations
