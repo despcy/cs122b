@@ -17,7 +17,15 @@ message: -1->auth fail
 
 ### Login:
 
-最后再做，不影响
+``/api/login''
+#### response:
+```json
+{
+   "message":0,
+   "data": "user Object"
+}
+
+```
 
 ### Search/List:
 
