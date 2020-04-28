@@ -43,7 +43,7 @@ Jingwen Mo:
 3. Debug and test
 
 Chenxi Yang:
-1. Design api and implement the front end using Vue.js framework.
+1. Design api and implement the front end using Vue.js framework and make the UI look nicer.
 2. Participate in developing the "search" database operations and improve the performance of backend database operations
 3. Debug and test
 
