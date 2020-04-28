@@ -17,7 +17,7 @@ message: -1->auth fail
 
 ### Login:
 
-``/api/login''
+``/api/login``
 #### response:
 ```json
 {
