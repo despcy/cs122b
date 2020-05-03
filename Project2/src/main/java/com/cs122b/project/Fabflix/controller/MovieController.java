@@ -10,6 +10,7 @@ import com.cs122b.project.Fabflix.model.CartItem;
 import com.cs122b.project.Fabflix.model.Customer;
 import com.cs122b.project.Fabflix.model.Movie;
 import com.cs122b.project.Fabflix.session.CartSession;
+import com.cs122b.project.Fabflix.utils.RecaptchaVerifyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +45,15 @@ public class MovieController {
 
     @PostMapping("/login")
     public BaseResponse CustomerLogin(@RequestParam("email")String email, @RequestParam("password") String password,
+                                      @RequestParam("g-recaptcha-response") String recap,
                                       HttpSession session) throws Exception {
+        try {
+            RecaptchaVerifyUtils.verify(recap);
+        } catch (Exception e) {
+            BaseResponse response=new BaseResponse(1);
+            response.setData("Recaptcha Error!");
+            return response;
+        }
         BaseResponse response = movieService.login(email,password);
         if (response.getMessage() == 0){
             session.setAttribute(session.getId(),response);
@@ -130,14 +139,6 @@ public class MovieController {
                                      @RequestParam("userId") String userId, HttpSession session){
         return movieService.checkoutService(firstname, lastname, number, expire, userId, session);
     }
-
-
-
-
-
-
-
-
 
 
 
