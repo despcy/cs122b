@@ -25,17 +25,18 @@ public class MovieService {
         return response;
     }
 
-    public List<Movie> getTop20Movies() {
-        //top 20 movies
+//    public List<Movie> getTop20Movies() {
+//        //top 20 movies
+//
+//        List<Movie> result=new ArrayList<>();
+//        try {
+//            result=dbService.getTop20Movies();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
 
-        List<Movie> result=new ArrayList<>();
-        try {
-            result=dbService.getTop20Movies();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
     //using id to get information from db
     public MovieResponse movieDetail(String id) {
 

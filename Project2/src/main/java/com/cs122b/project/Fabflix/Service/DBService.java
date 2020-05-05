@@ -56,22 +56,7 @@ public class DBService {
         }
         return new Movie();
     }
-    //TODO:preparedStmt
-    private ResultSet query(String queryStr) throws Exception{
-        // Create an execute an SQL statement to select all of table"Stars" records
-        Statement select = connection.createStatement();
-        String query = queryStr;
-        System.out.println(query);
-        ResultSet result = select.executeQuery(query);
 
-        // Get metatdata from stars; print # of attributes in table
-        System.out.println("The results of the query");
-        ResultSetMetaData metadata = result.getMetaData();
-        System.out.println("There are " + metadata.getColumnCount() + " columns");
-
-        return result;
-    }
-    //TODO:preparedStmt
     private Movie resultToMovie(ResultSet result) throws Exception{
         Movie mov=new Movie();
         mov.setId(result.getString("id"));
@@ -80,7 +65,8 @@ public class DBService {
         mov.setYear(result.getInt("year"));
         return mov;
     }
-    //TODO:preparedStmt
+
+    /*
     public List<Movie> getTop20Movies()throws Exception{
         ResultSet q=query("select * from ratings order by rating desc limit 20;");
         ArrayList<Movie> movies =new ArrayList<>();
@@ -114,22 +100,29 @@ public class DBService {
         }
         return movies;
     }
+     */
 
 
-    //TODO:preparedStmt
     public Star getStarById(String starId) throws Exception{
-        ResultSet result=query("select * from movies where movies.id in (select movieId from stars_in_movies where starId = \""+starId+"\") order by movies.year desc, movies.title asc");
+        String query = "select * from movies where movies.id in (select movieId from stars_in_movies where starId = ?) order by movies.year desc, movies.title asc";
+        PreparedStatement stmt = connection.prepareStatement(query);
+        stmt.setString(1,starId);
         List<Movie> movs=new ArrayList<>();
+        ResultSet result = stmt.executeQuery();
         while(result.next()){
             movs.add(resultToMovie(result));
         }
-        ResultSet star=query("select * from stars where id = \""+starId+"\";");
+        //ResultSet star=query("select * from stars where id = \""+starId+"\";");
+        String query2="select * from stars where id = ?;";
+        PreparedStatement stmt2 = connection.prepareStatement(query2);
+        stmt2.setString(1,starId);
+        ResultSet star = stmt2.executeQuery();
         star.next();
         Star s=resultToStar(star);
         s.setMovies(movs);
         return s;
     }
-    //TODO:preparedStmt
+
     private Star resultToStar(ResultSet result) throws Exception{
         Star star=new Star();
         star.setId(result.getString("id"));
@@ -258,7 +251,7 @@ public class DBService {
         return sr;
 
     }
-    //TODO:preparedStmt
+
     private ArrayList<Movie> moviesFetch2(PreparedStatement stat,Boolean limit) throws Exception {
         //select movieID from movie where
 
@@ -271,22 +264,27 @@ public class DBService {
             Movie mov = resultToMovie(mtmp);
             String q;
             if(limit){
-                q="select * from stars where stars.id in (select starId from stars_in_movies where movieId='"+mov.getId()+"') order by (select count(*) from stars_in_movies where stars_in_movies.starId = stars.id) desc , stars.name asc limit 3";
+                q="select * from stars where stars.id in (select starId from stars_in_movies where movieId= ? ) order by (select count(*) from stars_in_movies where stars_in_movies.starId = stars.id) desc , stars.name asc limit 3";
             }else{
-                q="select * from stars where stars.id in (select starId from stars_in_movies where movieId='"+mov.getId()+"') order by (select count(*) from stars_in_movies where stars_in_movies.starId = stars.id) desc , stars.name asc";
+                q="select * from stars where stars.id in (select starId from stars_in_movies where movieId= ? ) order by (select count(*) from stars_in_movies where stars_in_movies.starId = stars.id) desc , stars.name asc";
             }
-            ResultSet tmp = query(q);
+            PreparedStatement smt=connection.prepareStatement(q);
+            smt.setString(1,mov.getId());
+            ResultSet tmp = smt.executeQuery();
             ArrayList<Star> stars = new ArrayList<>();
             while (tmp.next()) {
                 stars.add(resultToStar(tmp));
             }
             mov.setStars(stars);
             if(limit) {
-                tmp = query("select * from genres where genres.id in (select genreId from genres_in_movies where movieId=\"" + mov.getId() + "\") order by name asc limit 3;");
+                smt=connection.prepareStatement("select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc limit 3;");
+
             }else{
-                tmp = query("select * from genres where genres.id in (select genreId from genres_in_movies where movieId=\"" + mov.getId() + "\") order by name asc;");
+                smt=connection.prepareStatement("select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc;");
 
             }
+            smt.setString(1,mov.getId());
+            tmp=smt.executeQuery();
             ArrayList<Genre> genres = new ArrayList<>();
             while (tmp.next()) {
                 Genre g = new Genre();
@@ -295,7 +293,10 @@ public class DBService {
                 genres.add(g);
             }
             mov.setGenres(genres);
-            tmp = query("select rating from ratings where movieId = \"" + mov.getId() + "\";");
+
+            smt=connection.prepareStatement("select rating from ratings where movieId = ?;");
+            smt.setString(1,mov.getId());
+            tmp=smt.executeQuery();
             if(tmp.next()) {
                 mov.setRating(tmp.getFloat("rating"));
             }else{
@@ -361,8 +362,8 @@ public class DBService {
                 + limitCondition;
         stmt=connection.prepareStatement(sql);
         stmt.setString(1,genre);
-        stmt.setInt(2,pagesize);
-        stmt.setInt(3,offset);
+        stmt.setInt(2, pagesize);
+        stmt.setInt(3, offset);
         ArrayList<Movie> m_list = moviesFetch2(stmt,true);
 
         Data data = new Data();
@@ -454,10 +455,11 @@ public class DBService {
         return sr;
     }
 
-    //TODO:preparedStmt
     //look for all genres sort alphabetical
     public ListGenResponse genlist() throws Exception {
-        ResultSet q=query("select * from genres order by ascii(lower(genres.name));");
+        //ResultSet q=query("select * from genres order by ascii(lower(genres.name));");
+        PreparedStatement Stmt = connection.prepareStatement("select * from genres order by ascii(lower(genres.name));");
+        ResultSet q = Stmt.executeQuery();
         ArrayList<String> genlist =new ArrayList<>();
         while(q.next()){
             genlist.add(q.getString(2));
@@ -470,12 +472,19 @@ public class DBService {
     }
 
     //check credit card and add to sales
-    //TODO:preparedStmt
     public CheckoutResponse checkout(String firstname, String lastname, String number, String expire,
                                      String userId, HttpSession session) throws Exception {
         CheckoutResponse cr = new CheckoutResponse(1);
-        String sql = "select * from creditcards where creditcards.id = \"" +number+"\" and  creditcards.firstname = \"" +firstname+"\" and creditcards.lastname = \"" +lastname+"\" and creditcards.expiration = \"" +expire+"\";";
-        ResultSet q1=query(sql);
+        //String sql = "select * from creditcards where creditcards.id = \"" +number+"\" and  creditcards.firstname = \"" +firstname+"\" and creditcards.lastname = \"" +lastname+"\" and creditcards.expiration = \"" +expire+"\";";
+        String sql = "select * from creditcards where creditcards.id = ? and  creditcards.firstname = ? and creditcards.lastname = ? and creditcards.expiration = ?;";
+
+        PreparedStatement stm = connection.prepareStatement(sql);
+        stm.setString(1,number);
+        stm.setString(2, firstname);
+        stm.setString(3, lastname);
+        stm.setString(4, expire);
+
+        ResultSet q1 = stm.executeQuery();
         boolean flag=false;
         while (q1.next()) {
             cr.setMessage(0);
@@ -522,12 +531,17 @@ public class DBService {
         cs.removeAllItemsFromCart();
         return cr;
     }
-    //TODO:preparedStmt
+
     public BaseResponse findByAccount(String email, String pwd) throws Exception {
         BaseResponse response = new BaseResponse(-1);
 
-        String sql = "select * from customers where customers.email = \""+ email +"\" and customers.password = \"" +pwd +"\";";
-        ResultSet q1=query(sql);
+        //String sql = "select * from customers where customers.email = \""+ email +"\" and customers.password = \"" +pwd +"\";";
+        String sql = "select * from customers where customers.email = ? and customers.password = ?;";
+        PreparedStatement stm = connection.prepareStatement(sql);
+        stm.setString(1, email);
+        stm.setString(2, pwd);
+
+        ResultSet q1 = stm.executeQuery();
         System.out.println(sql);
 
         while (q1.next()) {
