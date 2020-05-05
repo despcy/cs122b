@@ -45,14 +45,18 @@ public class DBService {
     }
 
     public Movie getMovieByID(String movieID) throws Exception{
-        String query="select * from movies where movies.id = '"+movieID+"'";
-        ArrayList<Movie> result=moviesFetch2(query,false);
+
+        String query="select * from movies where movies.id = ?";
+        PreparedStatement Stmt=connection.prepareStatement(query);
+        Stmt.setString(1,movieID);
+
+        ArrayList<Movie> result=moviesFetch2(Stmt,false);
         if(result.size()>0){
             return result.get(0);
         }
         return new Movie();
     }
-
+    //TODO:preparedStmt
     private ResultSet query(String queryStr) throws Exception{
         // Create an execute an SQL statement to select all of table"Stars" records
         Statement select = connection.createStatement();
@@ -67,7 +71,7 @@ public class DBService {
 
         return result;
     }
-
+    //TODO:preparedStmt
     private Movie resultToMovie(ResultSet result) throws Exception{
         Movie mov=new Movie();
         mov.setId(result.getString("id"));
@@ -76,7 +80,7 @@ public class DBService {
         mov.setYear(result.getInt("year"));
         return mov;
     }
-
+    //TODO:preparedStmt
     public List<Movie> getTop20Movies()throws Exception{
         ResultSet q=query("select * from ratings order by rating desc limit 20;");
         ArrayList<Movie> movies =new ArrayList<>();
@@ -112,7 +116,7 @@ public class DBService {
     }
 
 
-
+    //TODO:preparedStmt
     public Star getStarById(String starId) throws Exception{
         ResultSet result=query("select * from movies where movies.id in (select movieId from stars_in_movies where starId = \""+starId+"\") order by movies.year desc, movies.title asc");
         List<Movie> movs=new ArrayList<>();
@@ -125,7 +129,7 @@ public class DBService {
         s.setMovies(movs);
         return s;
     }
-
+    //TODO:preparedStmt
     private Star resultToStar(ResultSet result) throws Exception{
         Star star=new Star();
         star.setId(result.getString("id"));
@@ -134,11 +138,7 @@ public class DBService {
         return star;
     }
 
-    //under developing...
-    public Customer login(Customer customer) {
 
-        return null;
-    }
 
     public SearchResponse getSearchResult(String title, String year, String director, String starName, int page, int pagesize,
                                           String sort, String order) throws Exception {
@@ -149,32 +149,39 @@ public class DBService {
         String searchCondition = "where 1=1";
         String limitCondition = "";
         String starCondition = "";
+        ArrayList<String> qparam=new ArrayList<>();
         if (title != null && !title.isEmpty())
         {
-            searchCondition = searchCondition +" AND movies.title LIKE \"%" + title + "%\"";
+            searchCondition = searchCondition +" AND movies.title LIKE \"%?%\"";
+            qparam.add(title);
         }
 
         if (year != null && !year.isEmpty())
         {
-            searchCondition = searchCondition + " AND movies.year = " + year ;
+            searchCondition = searchCondition + " AND movies.year = ?";
+            qparam.add(year);
         }
 
         if (director != null && !director.isEmpty())
         {
-            searchCondition = searchCondition + " AND movies.director like \"%" + director + "%\"";
+            searchCondition = searchCondition + " AND movies.director like \"%?%\"";
+            qparam.add(director);
         }
         if (starName != null && !starName.isEmpty())
         {
-            starCondition = " and id in (select distinct movieId from stars_in_movies inner join stars on stars_in_movies.starId = stars.id where name like '%"+starName+"%')";
+            starCondition = " and id in (select distinct movieId from stars_in_movies inner join stars on stars_in_movies.starId = stars.id where name like '%?%')";
+            qparam.add(starName);
         }
 
-        limitCondition = limitCondition + " LIMIT " + pagesize;
+        limitCondition = limitCondition + " LIMIT ?";
 
         int offset = 0;
         if (page == 1) offset = 0;
-        else
-            offset = (page - 1)*pagesize;
-        limitCondition = limitCondition + " OFFSET " + offset + ";";
+        else {
+            offset = (page - 1) * pagesize;
+
+        }
+        limitCondition = limitCondition + " OFFSET ?";
         if (sort != null && !sort.isEmpty())
         {
             String ord1="asc";
@@ -203,13 +210,22 @@ public class DBService {
                 orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) "+ord1+" , movies.title "+ ord2;
             }
         }
+
+
         //pagenation
         String querystr="select count(*) from movies "+searchCondition;
 
         if(starCondition!=""){
             querystr+=starCondition;
         }
-        ResultSet q1=query(querystr);
+
+
+        PreparedStatement stmt=connection.prepareStatement(querystr);
+        for(int i=0;i<qparam.size();i++){
+            stmt.setString(i+1,qparam.get(i));
+        }
+
+        ResultSet q1=stmt.executeQuery();
         long items = 0;
         while (q1.next()) {
             items = q1.getLong(1);}
@@ -222,7 +238,15 @@ public class DBService {
         querystr +=orderByCondition;
         querystr+=limitCondition;
 
-        m_list = moviesFetch2(querystr,true);
+
+        stmt=connection.prepareStatement(querystr);
+        for(int i=0;i<qparam.size();i++){
+            stmt.setString(i+1,qparam.get(i));
+        }
+        stmt.setInt(qparam.size()+1,pagesize);
+        stmt.setInt(qparam.size()+2,offset);
+
+        m_list = moviesFetch2(stmt,true);
         Data data = new Data();
         data.setMovies(m_list);
         data.setCurPage(page);
@@ -234,16 +258,15 @@ public class DBService {
         return sr;
 
     }
-
-    private ArrayList<Movie> moviesFetch2(String querystr,Boolean limit) throws Exception {
+    //TODO:preparedStmt
+    private ArrayList<Movie> moviesFetch2(PreparedStatement stat,Boolean limit) throws Exception {
         //select movieID from movie where
 
-        System.out.println(querystr);
 
 
         ArrayList<Movie> movies =new ArrayList<>();
 
-        ResultSet mtmp=query(querystr);
+        ResultSet mtmp=stat.executeQuery();
         while(mtmp.next()) {
             Movie mov = resultToMovie(mtmp);
             String q;
@@ -283,86 +306,18 @@ public class DBService {
         return movies;
     }
 
-    private ArrayList<Movie> moviesFetch(String searchCondition, String orderByCondition, String limitCondition) throws Exception {
-        String sqlquery = "SELECT stars.id, stars.name, stars.birthYear, movies.id, movies.title, movies.year, movies.director, "
-                + "genres.id, genres.name FROM movies "
-                + "INNER JOIN stars_in_movies ON stars_in_movies.movieId = movies.id "
-                + "INNER JOIN stars ON stars_in_movies.starId = stars.id "
-                + "INNER JOIN genres_in_movies ON genres_in_movies.movieId = movies.id "
-                + "INNER JOIN genres ON genres.id = genres_in_movies.genreId "
-                + searchCondition
-                + orderByCondition
-                + limitCondition;
-        ResultSet q = query(sqlquery);
-        HashMap<String, Movie> movieMap = new HashMap<String, Movie>();
 
-        while (q.next())
-        {
-            Star star = new Star(q.getString(1), q.getString(2), q.getInt(3));
-            Genre genre = new Genre(q.getInt(8), q.getString(9));
-
-            if (movieMap.containsKey(q.getString(4)))
-            {
-                Movie movie = movieMap.get(q.getString(4));
-                boolean addStar = true;
-                boolean addGenre = true;
-
-                for (Star existingStar : movie.getStars())
-                {
-                    if (existingStar.getId().equals(star.getId()))
-                    {
-                        addStar = false;
-                    }
-                }
-
-                if (addStar)
-                {
-                    movie.addStar(star);
-                }
-
-                for (Genre existingGenre : movie.getGenres())
-                {
-                    if (existingGenre.getId() == genre.getId())
-                    {
-                        addGenre = false;
-                    }
-                }
-
-                if (addGenre)
-                {
-                    movie.addGenre(genre);
-                }
-
-                movieMap.put(movie.getId(), movie);
-            }
-            else
-            {
-                ArrayList<Genre> genres = new ArrayList<Genre>();
-                genres.add(genre);
-
-                ArrayList<Star> stars = new ArrayList<Star>();
-                stars.add(star);
-
-                Movie movie = new Movie(q.getString(4), q.getString(5), q.getInt(6),
-                        q.getString(7), q.getInt(8),stars,genres);
-                movieMap.put(movie.getId(), movie);
-            }
-        }
-        ArrayList<Movie> movies = new ArrayList<Movie>(movieMap.values());
-        return movies;
-
-    }
 
     public SearchResponse getGenreSearchResult(String genre, int page, int pagesize, String sort, String order) throws Exception {
         String orderByCondition = " ORDER BY movies.title ASC";
         String limitCondition = "";
-        limitCondition = limitCondition + " limit " + pagesize;
+        limitCondition = limitCondition + " limit ?";
 
         int offset = 0;
         if (page == 1) offset = 0;
         else
             offset = (page - 1)*pagesize;
-        limitCondition = limitCondition + " OFFSET " + offset + ";";
+        limitCondition = limitCondition + " OFFSET ?";
         if (sort != null && !sort.isEmpty())
         {
             String ord1="asc";
@@ -392,18 +347,23 @@ public class DBService {
             }
         }
 
-        String countSQL = "select count(*) from movies where movies.id in (select movieId from genres_in_movies where genres_in_movies.genreId in (select id from genres where genres.name = \"" + genre + "\" ))";
-        ResultSet q1=query(countSQL);
+        String countSQL = "select count(*) from movies where movies.id in (select movieId from genres_in_movies where genres_in_movies.genreId in (select id from genres where genres.name = ? ))";
+        PreparedStatement stmt=connection.prepareStatement(countSQL);
+        stmt.setString(1,genre);
+        ResultSet q1=stmt.executeQuery();
         long items = 0;
         while (q1.next()) {
         items = q1.getLong(1);
         System.out.println(items);}
 
-        String sql = "select * from movies where movies.id in (select movieId from genres_in_movies where genres_in_movies.genreId in (select id from genres where genres.name = \"" + genre + "\" ))"
+        String sql = "select * from movies where movies.id in (select movieId from genres_in_movies where genres_in_movies.genreId in (select id from genres where genres.name = ? ))"
                 + orderByCondition
                 + limitCondition;
-
-        ArrayList<Movie> m_list = moviesFetch2(sql,true);
+        stmt=connection.prepareStatement(sql);
+        stmt.setString(1,genre);
+        stmt.setInt(2,pagesize);
+        stmt.setInt(3,offset);
+        ArrayList<Movie> m_list = moviesFetch2(stmt,true);
 
         Data data = new Data();
         data.setMovies(m_list);
@@ -420,13 +380,13 @@ public class DBService {
 
         String orderByCondition = " ORDER BY movies.title ASC";
         String limitCondition = "";
-        limitCondition = limitCondition + " limit " + pagesize;
+        limitCondition = limitCondition + " limit ?";
 
         int offset = 0;
         if (page == 1) offset = 0;
         else
             offset = (page - 1)*pagesize;
-        limitCondition = limitCondition + " OFFSET " + offset + ";";
+        limitCondition = limitCondition + " OFFSET ? ;";
         if (sort != null && !sort.isEmpty())
         {
             String ord1="asc";
@@ -458,21 +418,30 @@ public class DBService {
 
         if(alphabet.charAt(0)=='*'){
           alphabet="^[^a-z0-9]";   
+        }else{
+            alphabet="^"+alphabet;
+           // System.out.println(alphabet);
         }
-        String countSQL = "select count(*) from movies where movies.title REGEXP '^"+alphabet + "'";
-        
-        ResultSet q1=query(countSQL);
+        String countSQL = "select count(*) from movies where movies.title REGEXP ?";
+        PreparedStatement stmt=connection.prepareStatement(countSQL);
+        stmt.setString(1,alphabet);
+
+        ResultSet q1=stmt.executeQuery();
 
         long items = 0;
         while (q1.next()) {
             items = q1.getLong(1);
             System.out.println("aaaaaaaaa"+items);}
 
-        String sql = "select * from movies where movies.title REGEXP '^"+alphabet + "'"
+        String sql = "select * from movies where movies.title REGEXP ?"
                 + orderByCondition
                 + limitCondition;
 
-        ArrayList<Movie> m_list = moviesFetch2(sql,true);
+        stmt=connection.prepareStatement(sql);
+        stmt.setString(1,alphabet);
+        stmt.setInt(2,pagesize);
+        stmt.setInt(3,offset);
+        ArrayList<Movie> m_list = moviesFetch2(stmt,true);
 
         Data data = new Data();
         data.setMovies(m_list);
@@ -485,6 +454,7 @@ public class DBService {
         return sr;
     }
 
+    //TODO:preparedStmt
     //look for all genres sort alphabetical
     public ListGenResponse genlist() throws Exception {
         ResultSet q=query("select * from genres order by ascii(lower(genres.name));");
@@ -500,6 +470,7 @@ public class DBService {
     }
 
     //check credit card and add to sales
+    //TODO:preparedStmt
     public CheckoutResponse checkout(String firstname, String lastname, String number, String expire,
                                      String userId, HttpSession session) throws Exception {
         CheckoutResponse cr = new CheckoutResponse(1);
@@ -551,7 +522,7 @@ public class DBService {
         cs.removeAllItemsFromCart();
         return cr;
     }
-
+    //TODO:preparedStmt
     public BaseResponse findByAccount(String email, String pwd) throws Exception {
         BaseResponse response = new BaseResponse(-1);
 
