@@ -497,7 +497,8 @@ public class DBService {
         CartSession cs = (CartSession) session.getAttribute("cart");
         ArrayList<CartItem> cartItems = cs.getCartItems();
         cr.setCartList(cartItems);
-        String sql_add ="INSERT INTO sales (customerId, movieId, saleDate)";
+        String sql_add ="INSERT INTO sales (customerId, movieId, saleDate) VALUES ( ?, ?, ?)";
+        PreparedStatement stmt = connection.prepareStatement(sql_add,Statement.RETURN_GENERATED_KEYS);
 
         Date date = Calendar.getInstance().getTime();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -507,14 +508,18 @@ public class DBService {
 
         for (CartItem item: cartItems) {
 
-            String add = " VALUES ( \'"+userId+"\', \'"+item.getMovieId()+"\', \'"+strDate+"\');";
+            //String add = " VALUES ( \'"+userId+"\', \'"+item.getMovieId()+"\', \'"+strDate+"\');";
+            stmt.setString(1, userId);
+            stmt.setString(2, item.getMovieId());
+            stmt.setString(3, strDate);
             //System.out.println(sql_add+add);
-            Statement select = connection.createStatement();
+
 
             int quantity = item.getQuantity();
             for (int i = 0; i < quantity; i++){
-                select.executeUpdate(sql_add+add, select.RETURN_GENERATED_KEYS);
-                try (ResultSet generatedKeys = select.getGeneratedKeys()) {
+                stmt.executeUpdate();
+                //select.executeUpdate(sql_add+add, select.RETURN_GENERATED_KEYS);
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         sid.add(Long.toString(generatedKeys.getLong(1)));
                     }
