@@ -567,4 +567,30 @@ public class DBService {
         }
         return response;
     }
+
+    public BaseResponse adminLogin(String email, String password) throws SQLException {
+        BaseResponse response = new BaseResponse(-1);
+
+        //String sql = "select * from customers where customers.email = \""+ email +"\" and customers.password = \"" +pwd +"\";";
+        String sql = "select * from employees where employees.email = ?;";
+        PreparedStatement stm = connection.prepareStatement(sql);
+        stm.setString(1, email);
+        //stm.setString(2, pwd);
+
+        ResultSet q1 = stm.executeQuery();
+        System.out.println(sql);
+        boolean success = false;
+
+        if (q1.next()) {
+            // get the encrypted password from the database
+            String encryptedPassword = q1.getString("password");
+
+            // use the same encryptor to compare the user input password with encrypted password stored in DB
+            success = new StrongPasswordEncryptor().checkPassword(password, encryptedPassword);
+            if (success) {
+                response.setMessage(0);
+            }
+        }
+        return response;
+    }
 }

@@ -126,5 +126,16 @@ public class MovieService {
         }
         return sr;
     }
+
+    public BaseResponse adminlogin(String email, String password) {
+        BaseResponse response = new BaseResponse(-1);
+        try {
+            response = dbService.adminLogin(email, password);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
 }
 

@@ -61,6 +61,7 @@ public class MovieController {
         }
         return response;
     }
+
     @RequestMapping(value = "/user")
     public BaseResponse getUserName(HttpSession session){
 
@@ -138,6 +139,24 @@ public class MovieController {
                          @RequestParam("number") String number, @RequestParam("expire") String expire,
                                      @RequestParam("userId") String userId, HttpSession session){
         return movieService.checkoutService(firstname, lastname, number, expire, userId, session);
+    }
+
+    @PostMapping("/dash/login")
+    public BaseResponse AdminLogin(@RequestParam("email")String email, @RequestParam("password") String password,
+                                      @RequestParam("g-recaptcha-response") String recap,
+                                      HttpSession session) throws Exception {
+        try {
+            RecaptchaVerifyUtils.verify(recap);
+        } catch (Exception e) {
+            BaseResponse response=new BaseResponse(1);
+            response.setData("Recaptcha Error!");
+            return response;
+        }
+        BaseResponse response = movieService.adminlogin(email,password);
+        if (response.getMessage() == 0){
+            session.setAttribute("admin",response);
+        }
+        return response;
     }
 
 
