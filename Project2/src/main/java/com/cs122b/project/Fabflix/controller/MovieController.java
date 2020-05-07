@@ -159,6 +159,26 @@ public class MovieController {
         return response;
     }
 
+    @GetMapping("/dash/show")
+    public AdminResponse showDash() {
+        AdminResponse ar = new AdminResponse();
+
+
+        return ar;
+    }
+
+    @PostMapping("/dash/addMovie")
+    public BaseResponse addMovie(@RequestParam("title") String title, @RequestParam("year") String year,
+                                 @RequestParam("director") String director, @RequestParam("star") String starName,
+                                 @RequestParam("genre") String genre){
+        return movieService.addMovie(title, year, director, starName, genre);
+    }
+
+    @PostMapping("/dash/addStar")
+    public BaseResponse addStar(@RequestParam("name") String name, @RequestParam("birth") String birth){
+        return movieService.addStar(name, birth);
+    }
+
 
 
 }

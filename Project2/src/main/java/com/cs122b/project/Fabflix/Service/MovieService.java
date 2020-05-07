@@ -137,5 +137,27 @@ public class MovieService {
 
         return response;
     }
+
+    public BaseResponse addMovie(String title, String year, String director, String starName, String genre) {
+        BaseResponse response = new BaseResponse(-1);
+        try {
+            response = dbService.addMovie(title, year, director, starName, genre);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+    public BaseResponse addStar(String name, String birth) {
+        BaseResponse response = new BaseResponse(-1);
+        try {
+            response = dbService.addStar(name, birth);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
 }
 

@@ -593,4 +593,12 @@ public class DBService {
         }
         return response;
     }
+
+    public BaseResponse addMovie(String title, String year, String director, String starName, String genre) {
+
+    }
+
+    public BaseResponse addStar(String name, String birth) {
+
+    }
 }
