@@ -14,8 +14,7 @@ DROP PROCEDURE IF EXISTS add_movie |
 -- Procedure definition
 CREATE PROCEDURE add_movie(IN mv_title VARCHAR(100),
     IN mv_year INTEGER, IN mv_director VARCHAR(100),
-    IN st_name VARCHAR(50), IN st_birth DATE, 
-    IN gn_name VARCHAR(32), IN src INTEGER,
+    IN st_name VARCHAR(50), IN gn_name VARCHAR(32), IN src INTEGER,
     OUT status INTEGER, OUT output VARCHAR(200))
 
 BEGIN
@@ -83,8 +82,8 @@ END IF;
 
 -- 4. If star does not exist and was provided, insert new star
 IF st_provided = 1 AND st_exists = 0 AND status = 0 THEN
-    INSERT INTO stars(name, birthYear)
-    VALUES (st_name, st_birth);
+    INSERT INTO stars(name)
+    VALUES (st_name);
     SELECT LAST_INSERT_ID() INTO st_id;
 END IF;
 
