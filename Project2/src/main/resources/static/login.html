@@ -40,6 +40,10 @@
                   <input type="password" class="form-control" name="password" placeholder="Password">
                   <div class="input-group-addon"><i class="fa fa-key"></i></div>
                 </div>
+                <div class="input-group">
+                  <input type="checkbox" id="adminLogin" name="Admin Login" value="AdminLogin">
+                  <label for="adminLogin">&nbsp;Login as admin</label><br>
+                </div>
               </section>
               <section class="log-in">
 
@@ -66,9 +70,13 @@
 
     var form = $(this);
     var url = form.attr('action');
+    var loginurl="/api/login";
+    if(document.getElementById("adminLogin").checked == true){
+      loginurl="/api/dash/login";
+    }
     $.ajax({
            type: "POST",
-           url: "/api/login",
+           url: loginurl,
            data: form.serialize(), // serializes the form's elements.
            success: function(data)
            {
