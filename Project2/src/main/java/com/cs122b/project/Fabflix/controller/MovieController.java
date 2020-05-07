@@ -145,6 +145,7 @@ public class MovieController {
     public BaseResponse AdminLogin(@RequestParam("email")String email, @RequestParam("password") String password,
                                       @RequestParam("g-recaptcha-response") String recap,
                                       HttpSession session) throws Exception {
+
         try {
             RecaptchaVerifyUtils.verify(recap);
         } catch (Exception e) {

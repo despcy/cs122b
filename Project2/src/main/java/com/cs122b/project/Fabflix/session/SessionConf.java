@@ -21,6 +21,7 @@ public class SessionConf implements WebMvcConfigurer {
         registry.addInterceptor(new SecurityInterceptor())
                 //排除拦截
                 .excludePathPatterns("/api/login")
+                .excludePathPatterns("/api/dash/login")
                 .excludePathPatterns("/api/logout")
 
                 //拦截路径
@@ -41,8 +42,9 @@ public class SessionConf implements WebMvcConfigurer {
         @Override
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
             HttpSession session = request.getSession();
+
             //return message -1
-             if(session.getAttribute(session.getId()) == null){
+             if(session.getAttribute(session.getId()) == null||session.getAttribute("admin")==null){
 
                  response.getWriter().write("{\"message\":-1,\"data\":\"Login First!\"}");
                  return false;

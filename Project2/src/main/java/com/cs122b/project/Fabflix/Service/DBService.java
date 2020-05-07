@@ -570,7 +570,8 @@ public class DBService {
 
     public BaseResponse adminLogin(String email, String password) throws SQLException {
         BaseResponse response = new BaseResponse(-1);
-
+        System.out.println(email);
+        System.out.println(password);
         //String sql = "select * from customers where customers.email = \""+ email +"\" and customers.password = \"" +pwd +"\";";
         String sql = "select * from employees where employees.email = ?;";
         PreparedStatement stm = connection.prepareStatement(sql);
@@ -595,10 +596,10 @@ public class DBService {
     }
 
     public BaseResponse addMovie(String title, String year, String director, String starName, String genre) {
-
+        return null;
     }
 
     public BaseResponse addStar(String name, String birth) {
-
+        return null;
     }
 }
