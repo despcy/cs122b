@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import org.jasypt.util.password.StrongPasswordEncryptor;
 
 @Service
 @Scope("singleton")
@@ -541,19 +542,28 @@ public class DBService {
         BaseResponse response = new BaseResponse(-1);
 
         //String sql = "select * from customers where customers.email = \""+ email +"\" and customers.password = \"" +pwd +"\";";
-        String sql = "select * from customers where customers.email = ? and customers.password = ?;";
+        String sql = "select * from customers where customers.email = ?;";
         PreparedStatement stm = connection.prepareStatement(sql);
         stm.setString(1, email);
-        stm.setString(2, pwd);
+        //stm.setString(2, pwd);
 
         ResultSet q1 = stm.executeQuery();
         System.out.println(sql);
+        boolean success = false;
 
-        while (q1.next()) {
-            response.setMessage(0);
-            Customer cus = new Customer(q1.getString(1),q1.getString(2),q1.getString(3),
-                     q1.getString(5), q1.getString(6), q1.getString(7));
-            response.setData(cus);
+        if (q1.next()) {
+            // get the encrypted password from the database
+            String encryptedPassword = q1.getString("password");
+
+            // use the same encryptor to compare the user input password with encrypted password stored in DB
+            success = new StrongPasswordEncryptor().checkPassword(pwd, encryptedPassword);
+            if (success) {
+                response.setMessage(0);
+                Customer cus = new Customer(q1.getString(1),q1.getString(2),q1.getString(3),
+                        q1.getString(5), q1.getString(6), q1.getString(7));
+                response.setData(cus);
+            }
+
         }
         return response;
     }
