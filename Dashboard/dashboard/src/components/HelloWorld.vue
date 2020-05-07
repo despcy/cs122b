@@ -1,6 +1,7 @@
 <template>
   <div class="hello">
 <h1>Hello, {{info.admin}}</h1>
+
 <div>
 <el-divider content-position="left"><h2>Insert Movie</h2></el-divider>
 <el-form label-width="120px" >
@@ -58,6 +59,7 @@
 
   </div>
 </div> 
+<el-button type="danger" @click="logout()">Logout</el-button>
   </div>
 </template>
 
@@ -138,7 +140,18 @@ export default {
             alert(response.data.data);
           }   }) 
 
+      },
+      logout(){
+  this.axios.get('/api/logout').then(
+    response=>{
+      if(response.data.message==-1){
+        window.location.href = "/login";
+      }else{
+        alert("Logout Failed!");
       }
+    }
+  )
+}
   },
 }
 </script>

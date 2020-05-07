@@ -19,6 +19,15 @@ public class IndexController {
         if(session.getAttribute(session.getId()) == null) {
             httpServletResponse.setHeader("Location", "/login");
             httpServletResponse.setStatus(302);
+        }else {
+
+
+            String role = (String) session.getAttribute(session.getId());
+            if (role.equals("admin")) {
+                httpServletResponse.setHeader("Location", "/login");
+                httpServletResponse.setStatus(302);
+            }
+
         }
 
         return "index";
@@ -26,12 +35,19 @@ public class IndexController {
     @RequestMapping("/_dashboard")
     public String dash(HttpSession session, HttpServletResponse httpServletResponse){
 
-        //if not login, redirect to login
-
-        if(session.getAttribute("admin") == null) {
+        if(session.getAttribute(session.getId())==null){
             httpServletResponse.setHeader("Location", "/login");
             httpServletResponse.setStatus(302);
+        }else {
+            //if not login, redirect to login
+            String role = (String) session.getAttribute(session.getId());
+            System.out.println(role);
+            if (!role.equals("admin")) {
+                httpServletResponse.setHeader("Location", "/login");
+                httpServletResponse.setStatus(302);
+            }
         }
+
 
         return "dashboard";
     }
@@ -40,13 +56,15 @@ public class IndexController {
     public String login(HttpSession session, HttpServletResponse httpServletResponse){
         //if already login, redirect to index
         if(session.getAttribute(session.getId()) != null) {
-            httpServletResponse.setHeader("Location", "/");
+            String role=(String)session.getAttribute(session.getId());
+            if(role.equals("admin")){
+                httpServletResponse.setHeader("Location", "/_dashboard");
+            }else {
+                httpServletResponse.setHeader("Location", "/");
+            }
             httpServletResponse.setStatus(302);
         }
-        if(session.getAttribute("admin") != null) {
-            httpServletResponse.setHeader("Location", "/_dashboard");
-            httpServletResponse.setStatus(302);
-        }
+
         return "login";
     }
 }

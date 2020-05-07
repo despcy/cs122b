@@ -137,6 +137,15 @@ public class MovieService {
 
         return response;
     }
+    public ArrayList<Table> getTableInfo(){
+        ArrayList<Table>result=dbService.listTables();
+        for(int i=0;i<result.size();i++){
+
+            result.get(i).setAttr(dbService.listAttr(result.get(i).getName()));
+        }
+        return result;
+
+    }
 
     public BaseResponse addMovie(String title, String year, String director, String starName, String genre) {
         BaseResponse response = new BaseResponse(-1);

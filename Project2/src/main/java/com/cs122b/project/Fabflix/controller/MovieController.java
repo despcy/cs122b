@@ -155,16 +155,28 @@ public class MovieController {
         }
         BaseResponse response = movieService.adminlogin(email,password);
         if (response.getMessage() == 0){
-            session.setAttribute("admin",response);
+            session.setAttribute(session.getId(),"admin");
+            session.setAttribute("admin",response.getData());
         }
         return response;
     }
-    //TODO:logout
+
 
     @GetMapping("/dash/show")
-    public AdminResponse showDash() {
+    public AdminResponse showDash(HttpSession session) {
         AdminResponse ar = new AdminResponse();
+        String role=(String)session.getAttribute(session.getId());
+        if(!role.equals("admin")){
 
+            ar.setMessage(-1);
+            return ar;
+        }
+        ar.setMessage(0);
+        DashData dt=new DashData();
+        dt.setAdmin((String)session.getAttribute("admin"));
+        ArrayList<Table> tables=movieService.getTableInfo();
+        dt.setTables(tables);
+        ar.setData(dt);
 
         return ar;
     }
@@ -173,11 +185,23 @@ public class MovieController {
     public BaseResponse addMovie(@RequestParam("title") String title, @RequestParam("year") String year,
                                  @RequestParam("director") String director, @RequestParam("star") String starName,
                                  @RequestParam("genre") String genre){
+//        String role=(String)session.getAttribute(session.getId());
+//        if(!role.equals("admin")){
+//
+//            ar.setMessage(-1);
+//            return ar;
+//        }
         return movieService.addMovie(title, year, director, starName, genre);
     }
 
     @PostMapping("/dash/addStar")
     public BaseResponse addStar(@RequestParam("name") String name, @RequestParam("birth") String birth){
+//        String role=(String)session.getAttribute(session.getId());
+//        if(!role.equals("admin")){
+//
+//            ar.setMessage(-1);
+//            return ar;
+//        }
         return movieService.addStar(name, birth);
     }
 

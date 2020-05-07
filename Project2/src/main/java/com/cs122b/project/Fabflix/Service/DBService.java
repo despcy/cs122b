@@ -582,11 +582,11 @@ public class DBService {
         ResultSet q1 = stm.executeQuery();
         System.out.println(sql);
         boolean success = false;
-
+        String adminName="Rick";
         if (q1.next()) {
             // get the encrypted password from the database
             String encryptedPassword = q1.getString("password");
-
+            adminName=q1.getString("fullname");
             // use the same encryptor to compare the user input password with encrypted password stored in DB
             success = new StrongPasswordEncryptor().checkPassword(password, encryptedPassword);
             if (success) {
@@ -595,9 +595,59 @@ public class DBService {
         }
 
         //TODO:delete this
-        //response.setMessage(0);
+       // response.setMessage(0);
+
+
+        response.setData(adminName);
         return response;
     }
+
+
+    public ArrayList<Table> listTables(){
+        ArrayList<Table> result=new ArrayList<>();
+        DatabaseMetaData metaData = null;
+        try {
+            metaData = connection.getMetaData();
+
+        String[] types = {"TABLE"};
+        //Retrieving the columns in the database
+        ResultSet tables = metaData.getTables(null, null, "%", types);
+        while (tables.next()) {
+            Table tb=new Table();
+             tb.setName(tables.getString("TABLE_NAME"));
+             result.add(tb);
+        }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+    public ArrayList<Attr> listAttr(String tablename){
+        ArrayList<Attr> result=new ArrayList<>();
+        DatabaseMetaData metaData = null;
+        try {
+            metaData = connection.getMetaData();
+
+            String[] types = {"TABLE"};
+            //Retrieving the columns in the database
+            ResultSet columns = metaData.getColumns(null,null, tablename, null);
+            while (columns.next()) {
+                Attr at=new Attr();
+
+                String columnName = columns.getString("COLUMN_NAME");
+                String datatype = columns.getString("DATA_TYPE");
+                at.setName(columnName);
+                at.setType(datatype);
+                result.add(at);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
 
     public BaseResponse addMovie(String title, String year, String director, String starName, String genre) {
         return null;

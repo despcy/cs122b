@@ -44,7 +44,7 @@ public class SessionConf implements WebMvcConfigurer {
             HttpSession session = request.getSession();
 
             //return message -1
-             if(session.getAttribute(session.getId()) == null||session.getAttribute("admin")==null){
+             if(session.getAttribute(session.getId()) == null){
 
                  response.getWriter().write("{\"message\":-1,\"data\":\"Login First!\"}");
                  return false;
