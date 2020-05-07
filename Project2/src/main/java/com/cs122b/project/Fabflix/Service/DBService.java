@@ -599,11 +599,27 @@ public class DBService {
         return response;
     }
 
-    public BaseResponse addMovie(String title, String year, String director, String starName, String genre) {
-        return null;
+    public BaseResponse addMovie(String title, String year, String director, String starName, String genre) throws SQLException {
+        BaseResponse response = new BaseResponse(-1);
+        CallableStatement cs = connection.prepareCall("{CALL add_movie(?,?,?,?,?)}");
+
+        cs.setString(1, title);
+        cs.setInt(2, year);
+        cs.setString(3, director);
+        cs.setString(4, starName);
+        cs.setString(5, genre);
+        cs.executeUpdate();
+
+
+
+        return response;
     }
 
     public BaseResponse addStar(String name, String birth) {
-        return null;
+        BaseResponse response = new BaseResponse(-1);
+
+
+
+        return response;
     }
 }
