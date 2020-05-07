@@ -569,6 +569,7 @@ public class DBService {
     }
 
     public BaseResponse adminLogin(String email, String password) throws SQLException {
+
         BaseResponse response = new BaseResponse(-1);
         System.out.println(email);
         System.out.println(password);
@@ -592,6 +593,9 @@ public class DBService {
                 response.setMessage(0);
             }
         }
+
+        //TODO:delete this
+        //response.setMessage(0);
         return response;
     }
 

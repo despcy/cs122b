@@ -23,12 +23,28 @@ public class IndexController {
 
         return "index";
     }
+    @RequestMapping("/_dashboard")
+    public String dash(HttpSession session, HttpServletResponse httpServletResponse){
+
+        //if not login, redirect to login
+
+        if(session.getAttribute("admin") == null) {
+            httpServletResponse.setHeader("Location", "/login");
+            httpServletResponse.setStatus(302);
+        }
+
+        return "dashboard";
+    }
 
     @RequestMapping("/login")
     public String login(HttpSession session, HttpServletResponse httpServletResponse){
         //if already login, redirect to index
         if(session.getAttribute(session.getId()) != null) {
             httpServletResponse.setHeader("Location", "/");
+            httpServletResponse.setStatus(302);
+        }
+        if(session.getAttribute("admin") != null) {
+            httpServletResponse.setHeader("Location", "/_dashboard");
             httpServletResponse.setStatus(302);
         }
         return "login";

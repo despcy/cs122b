@@ -88,7 +88,7 @@ export default {
         if(response.data.message==0){
           this.info=response.data.data;
         }else if(response.data.message==-1){
-          window.location="/login"
+          alert("auth error!");
         }else{
           alert(response.data.data);
         }
