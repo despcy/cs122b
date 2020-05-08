@@ -12,6 +12,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -67,17 +69,17 @@ import java.util.logging.SimpleFormatter;
 public class MainParser extends DefaultHandler {
     Logger logger = Logger.getLogger("MainParser");
     FileHandler fh;
-    private ArrayList<Movie> result;//In-memory hash table
+    private HashMap<String,Movie> result;//In-memory hash table
     Movie curMovie;
     String tmpVal;
     String dirbackup="";
 
-    public ArrayList<Movie> getResult(){
+    public HashMap<String,Movie> getResult(){
         return result;
     }
     MainParser(){
 
-        result=new ArrayList<>();
+        result=new HashMap<>();
 
     }
 
@@ -160,7 +162,7 @@ public class MainParser extends DefaultHandler {
                   // logger.info("MovieID "+curMovie.getId()+" has no genre!");
                 }
 
-                result.add(curMovie);
+                result.put(curMovie.getId(),curMovie);
             }else{
                 logger.warning("Bad format exception--missing <film>");
             }

@@ -109,7 +109,7 @@ export default {
         }}).then(
                 response=>{
                     if(response.data.message==0){
-                        alert("Success!");
+                       alert(response.data.data);
                                 this.movie.title="";
         this.movie.year="";
         this.movie.director="";
@@ -118,7 +118,7 @@ export default {
                     }else if(response.data.message == -1){
             alert('Auth Fail '+response.data.data);
           }else{
-            alert(response.data);
+            alert(response.data.data);
           }   })     
 
 
@@ -131,7 +131,7 @@ export default {
         }}).then(
                 response=>{
                     if(response.data.message==0){
-                        alert("Success!");
+                        alert(response.data.data);
         this.star.name="";
         this.star.birth="";
                     }else if(response.data.message == -1){
