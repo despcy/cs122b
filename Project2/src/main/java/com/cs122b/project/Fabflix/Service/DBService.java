@@ -602,7 +602,7 @@ public class DBService {
         return response;
     }
 
-
+    //TODO: use moviedb only
     public ArrayList<Table> listTables(){
         ArrayList<Table> result=new ArrayList<>();
         DatabaseMetaData metaData = null;
@@ -649,20 +649,29 @@ public class DBService {
     }
 
 
-    public BaseResponse addMovie(String title, String year, String director, String starName, String genre) {
-        return null;
     public BaseResponse addMovie(String title, String year, String director, String starName, String genre) throws SQLException {
         BaseResponse response = new BaseResponse(-1);
-        CallableStatement cs = connection.prepareCall("{CALL add_movie(?,?,?,?,?)}");
+        CallableStatement cs = connection.prepareCall("{CALL add_movie(?,?,?,?,?,?,?)}");
 
         cs.setString(1, title);
-        cs.setInt(2, year);
+        cs.setInt(2, Integer.parseInt(year));
         cs.setString(3, director);
         cs.setString(4, starName);
         cs.setString(5, genre);
+        cs.registerOutParameter(6,Types.INTEGER);
+        cs.registerOutParameter(7,Types.VARCHAR);
         cs.executeUpdate();
 
+        System.out.println(title+"   "+year+"   "+director);
 
+        int msg = cs.getInt(6);
+        String output = cs.getString(7);
+        System.out.println(msg);
+        System.out.println(output);
+        if(msg == 0) {
+            response.setMessage(0);
+            response.setData(output);
+        }
 
         return response;
     }

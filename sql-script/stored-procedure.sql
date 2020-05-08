@@ -14,19 +14,20 @@ DROP PROCEDURE IF EXISTS add_movie |
 -- Procedure definition
 CREATE PROCEDURE add_movie(IN mv_title VARCHAR(100),
     IN mv_year INTEGER, IN mv_director VARCHAR(100),
-    IN st_name VARCHAR(50), IN gn_name VARCHAR(32), IN src INTEGER,
+    IN st_name VARCHAR(50), IN gn_name VARCHAR(32),
     OUT status INTEGER, OUT output VARCHAR(200))
 
 BEGIN
 
 -- 0. Declare Variables and check if star/genre provided
 DECLARE mv_exists, st_provided, st_exists, gn_provided, gn_exists BOOLEAN DEFAULT 0;
-DECLARE mv_id, st_id, gn_id INTEGER DEFAULT 0;
+DECLARE mv_id, st_id, temp VARCHAR(50);
+DECLARE gn_id INTEGER DEFAULT 0;
 
 SET status = 0;
 SET output = "";
 
-IF st_lname != "" THEN
+IF st_name != "" THEN
     SET st_provided = 1;
 END IF;
 
@@ -42,29 +43,22 @@ SELECT EXISTS(SELECT 1 FROM movies
     INTO mv_exists;
 
 IF mv_exists = 1 THEN
-    SELECT id INTO mv_id FROM movies
-    WHERE title = mv_title AND year = mv_year
-    AND director = mv_director
-    LIMIT 1;
+    set output = "Movie already exists.";
+    set mv_id = (select id from movies where movies.title=mv_title and movies.year=mv_year and movies.director=mv_director);
 END IF;
 
--- 2. Insert/Update movie entry if valid procedure
-IF src = 0 THEN
+-- 2. movie didn't exist before. add it!
     IF mv_exists = 0 THEN
-        INSERT INTO movies(title, year, director)
-        VALUES(mv_title, mv_year, mv_director);
-        SELECT LAST_INSERT_ID() INTO mv_id;
-    ELSE
-        SET status = 1;
-        SET output = "Error. Movie already exists so insert failed. Try updating instead.";
+        SELECT max(id) from movies INTO mv_id;
+        if right(mv_id, 1)='9' then
+            select concat(mv_id, '0');
+        else
+            SELECT CONCAT(left(mv_id, length(mv_id)-1), right(mv_id, 1)+1) into mv_id;
+        end if;
+        INSERT INTO movies(id, title, year, director)
+        VALUES(mv_id, mv_title, mv_year, mv_director);
+
     END IF;
-END IF;
-IF src = 1 THEN
-    IF mv_exists = 0 THEN
-        SET status = 2;
-        SET output = "Error. Movie doesn't exist so update failed. Try inserting instead.";
-    END IF;
-END IF;
 
 -- 3. Check if Star exists in database if it was provided
 IF st_provided = 1 AND status = 0 THEN
@@ -74,17 +68,22 @@ IF st_provided = 1 AND status = 0 THEN
     INTO st_exists;
 
     IF st_exists = 1 THEN
-        SELECT id INTO st_id FROM stars
-        WHERE name = st_name
-        LIMIT 1;
+        SET output = "Star already exists.";
+        set st_id = (select id from stars where stars.name=st_name);
     END IF;
 END IF;
 
 -- 4. If star does not exist and was provided, insert new star
 IF st_provided = 1 AND st_exists = 0 AND status = 0 THEN
-    INSERT INTO stars(name)
-    VALUES (st_name);
-    SELECT LAST_INSERT_ID() INTO st_id;
+    SELECT max(id) from stars INTO st_id;
+    if right(st_id, 1)='9' then
+            select concat(st_id, '0');
+        else
+            SELECT CONCAT(left(st_id, length(st_id)-1), right(st_id, 1)+1) into st_id;
+        end if;
+
+    INSERT INTO stars(id, name)
+    VALUES (st_id, st_name);
 END IF;
 
 -- 5. Check if Genre exists in database if it was provided
@@ -95,16 +94,15 @@ IF gn_provided = 1 AND status = 0 THEN
     INTO gn_exists;
 
     IF gn_exists = 1 THEN
-        SELECT id INTO gn_id FROM genres
-        WHERE name = gn_name
-        LIMIT 1;
+        SET output = "genre already exists.";
+        set gn_id = (select id from genres where genres.name=gn_name);
     END IF;
 END IF;
 
 -- 6. If genre does not exist, insert new genre
 IF gn_provided = 1 AND gn_exists = 0 AND status = 0 THEN
     INSERT INTO genres(name) VALUES (gn_name);
-    SELECT LAST_INSERT_ID() INTO gn_id;
+    SET gn_id = (SELECT MAX(id) FROM genres WHERE name=gn_name);
 END IF;
 
 -- 7. Link entries via stars_in_movies if Star was provided
@@ -119,10 +117,8 @@ IF gn_provided = 1 AND status = 0 THEN
     VALUES (gn_id, mv_id);
 END IF;
 
-IF status = 0 AND src = "insertmovie" THEN
-    SET output = "Success. Movie was inserted.";
-ELSEIF status = 0 AND src = "updatemovie" THEN
-    SET output = "Success. Movie was updated without issue.";
+IF status = 0 THEN
+    SET output = "Success. Movie was added.";
 END IF;
 
 END |
