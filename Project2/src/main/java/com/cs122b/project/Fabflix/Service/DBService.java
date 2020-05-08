@@ -609,12 +609,13 @@ public class DBService {
         try {
             metaData = connection.getMetaData();
 
-        String[] types = {"TABLE"};
+       String[] types = {"TABLE"};
         //Retrieving the columns in the database
-        ResultSet tables = metaData.getTables(null, null, "%", types);
+        ResultSet tables = metaData.getTables("moviedb", "moviedb", null, types);
         while (tables.next()) {
             Table tb=new Table();
              tb.setName(tables.getString("TABLE_NAME"));
+           //  System.out.println(tb.getName());
              result.add(tb);
         }
 
@@ -631,7 +632,7 @@ public class DBService {
 
             String[] types = {"TABLE"};
             //Retrieving the columns in the database
-            ResultSet columns = metaData.getColumns(null,null, tablename, null);
+            ResultSet columns = metaData.getColumns("moviedb","moviedb", tablename, null);
             while (columns.next()) {
                 Attr at=new Attr();
 

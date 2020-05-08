@@ -21,11 +21,14 @@ public class IndexController {
             httpServletResponse.setStatus(302);
         }else {
 
+            try {
+                String role = (String) session.getAttribute(session.getId());
+                if (role.equals("admin")) {
+                    httpServletResponse.setHeader("Location", "/login");
+                    httpServletResponse.setStatus(302);
+                }
+            }catch (Exception e){
 
-            String role = (String) session.getAttribute(session.getId());
-            if (role.equals("admin")) {
-                httpServletResponse.setHeader("Location", "/login");
-                httpServletResponse.setStatus(302);
             }
 
         }
@@ -39,10 +42,15 @@ public class IndexController {
             httpServletResponse.setHeader("Location", "/login");
             httpServletResponse.setStatus(302);
         }else {
-            //if not login, redirect to login
-            String role = (String) session.getAttribute(session.getId());
-            System.out.println(role);
-            if (!role.equals("admin")) {
+            try {
+                //if not login, redirect to login
+                String role = (String) session.getAttribute(session.getId());
+                System.out.println(role);
+                if (!role.equals("admin")) {
+                    httpServletResponse.setHeader("Location", "/login");
+                    httpServletResponse.setStatus(302);
+                }
+            }catch (Exception e){
                 httpServletResponse.setHeader("Location", "/login");
                 httpServletResponse.setStatus(302);
             }
@@ -56,12 +64,18 @@ public class IndexController {
     public String login(HttpSession session, HttpServletResponse httpServletResponse){
         //if already login, redirect to index
         if(session.getAttribute(session.getId()) != null) {
-            String role=(String)session.getAttribute(session.getId());
-            if(role.equals("admin")){
-                httpServletResponse.setHeader("Location", "/_dashboard");
-            }else {
+            try {
+                String role = (String) session.getAttribute(session.getId());
+                if(role.equals("admin")){
+                    httpServletResponse.setHeader("Location", "/_dashboard");
+                }else {
+                    httpServletResponse.setHeader("Location", "/");
+                }
+
+            }catch (Exception e){
                 httpServletResponse.setHeader("Location", "/");
             }
+
             httpServletResponse.setStatus(302);
         }
 
