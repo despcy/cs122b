@@ -11,6 +11,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -43,6 +44,7 @@ public class ActorParser extends DefaultHandler {
     Logger logger = Logger.getLogger("ActorParser");
     FileHandler fh;
     private ArrayList<Star> result;
+    private HashSet<String> starname=new HashSet<>();
     Star curStar;
     String tmpVal;
 
@@ -105,14 +107,14 @@ public class ActorParser extends DefaultHandler {
 
         if(qName.equalsIgnoreCase("dob")){
             if(tmpVal==""){
-                curStar.setBirthYear(0);
+                curStar.setBirthYear(-1);
                 return;
             }
             try{
                 curStar.setBirthYear(Integer.valueOf(tmpVal.trim()));
             }catch (Exception e){
                 logger.warning("bad format for star "+curStar.getName()+"  birthyear "+tmpVal);
-                curStar.setBirthYear(0);
+                curStar.setBirthYear(-1);
             }
 
         }else if(qName.equalsIgnoreCase("stagename")){
@@ -131,11 +133,18 @@ public class ActorParser extends DefaultHandler {
             }
             if(curStar.getBirthYear()==null){
                 logger.warning("missing birth year for "+curStar.getName());
-                curStar.setBirthYear(0);
+                curStar.setBirthYear(-1);
                 return;
             }
 
             result.add(curStar);
+//            if(starname.contains(curStar.name)){
+//                System.out.println(curStar.name);
+//            }
+//            starname.add(curStar.getName());
+//            System.out.println(result.size());
+//            System.out.println(starname.size());
+//            System.out.println("---------");
 
         }
     }

@@ -67,7 +67,7 @@ import java.util.logging.SimpleFormatter;
 public class MainParser extends DefaultHandler {
     Logger logger = Logger.getLogger("MainParser");
     FileHandler fh;
-    private ArrayList<Movie> result;
+    private ArrayList<Movie> result;//In-memory hash table
     Movie curMovie;
     String tmpVal;
     String dirbackup="";
@@ -153,7 +153,7 @@ public class MainParser extends DefaultHandler {
                     logger.warning("MovieID "+curMovie.getId()+" has no title!");
                 }
                 if(curMovie.getYear()==null){
-                    curMovie.setYear(0);
+                    curMovie.setYear(-1);
                     logger.warning("MovieID "+curMovie.getId()+" has invalied year data!");
                 }
                 if(curMovie.genres.size()==0) {
