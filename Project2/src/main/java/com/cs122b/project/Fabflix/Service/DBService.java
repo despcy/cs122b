@@ -146,8 +146,8 @@ public class DBService {
         ArrayList<String> qparam=new ArrayList<>();
         if (title != null && !title.isEmpty())
         {
-            searchCondition = searchCondition +" AND movies.title LIKE \"%?%\"";
-            qparam.add(title);
+            searchCondition = searchCondition +" AND movies.title LIKE ?";
+            qparam.add("%"+title+"%");
         }
 
         if (year != null && !year.isEmpty())
@@ -158,13 +158,13 @@ public class DBService {
 
         if (director != null && !director.isEmpty())
         {
-            searchCondition = searchCondition + " AND movies.director like \"%?%\"";
-            qparam.add(director);
+            searchCondition = searchCondition + " AND movies.director like ?";
+            qparam.add("%"+director+"%");
         }
         if (starName != null && !starName.isEmpty())
         {
-            starCondition = " and id in (select distinct movieId from stars_in_movies inner join stars on stars_in_movies.starId = stars.id where name like '%?%')";
-            qparam.add(starName);
+            starCondition = " and id in (select distinct movieId from stars_in_movies inner join stars on stars_in_movies.starId = stars.id where name like ?)";
+            qparam.add("%"+starName+"%");
         }
 
         limitCondition = limitCondition + " LIMIT ?";
