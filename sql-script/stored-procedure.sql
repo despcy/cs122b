@@ -1,9 +1,8 @@
 
 /*
-Add Movie Procedure
-Defines the procedure for inserting or updating a movie in the database. Takes in movie info,
-star info, and genre info values from the employee dashboard as passed by dashboard servlet, 
-along with a 'src' parameter defining whether to run insert or update.
+Add movie procedure and add star procedure
+Defines the procedure for adding a movie in the database. Takes in movie info,
+star info, and genre info values from the employee dashboard 
 */
 
 -- Set delimiter for stored procedure
@@ -68,7 +67,7 @@ IF st_provided = 1 AND status = 0 THEN
     INTO st_exists;
 
     IF st_exists = 1 THEN
-        SET output = "Star already exists.";
+        select concat(output, " Star already exists.") into output;
         set st_id = (select id from stars where stars.name=st_name);
     END IF;
 END IF;
@@ -94,7 +93,7 @@ IF gn_provided = 1 AND status = 0 THEN
     INTO gn_exists;
 
     IF gn_exists = 1 THEN
-        SET output = "genre already exists.";
+        select concat(output, " Genre already exists.") into output;
         set gn_id = (select id from genres where genres.name=gn_name);
     END IF;
 END IF;
@@ -118,7 +117,58 @@ IF gn_provided = 1 AND status = 0 THEN
 END IF;
 
 IF status = 0 THEN
-    SET output = "Success. Movie was added.";
+    select concat(output, " Success. Information is added.") into output;
+END IF;
+
+END |
+
+-- Reset delimiter to SQL default
+DELIMITER ;
+
+DELIMITER |
+
+DROP PROCEDURE IF EXISTS add_star |
+
+-- Procedure definition
+CREATE PROCEDURE add_star(IN st_name VARCHAR(100),
+    IN birth INTEGER, 
+    OUT status INTEGER, OUT st_id VARCHAR(10), OUT output VARCHAR(200))
+
+BEGIN
+
+-- 0. Declare Variables and check if star/genre provided
+DECLARE st_id VARCHAR(50);
+DECLARE st_exists BOOLEAN DEFAULT 0;
+
+SET status = 0;
+SET output = "";
+
+    SELECT EXISTS(SELECT 1 FROM stars
+    WHERE name = st_name
+    LIMIT 1)
+    INTO st_exists;
+
+    IF st_exists = 1 THEN
+        set output=" Star already exists.";
+        set st_id = (select id from stars where stars.name=st_name);
+        update stars set birthYear=birth where id=st_id;
+    END IF;
+
+
+IF st_exists = 0 AND status = 0 THEN
+    SELECT max(id) from stars INTO st_id;
+    if right(st_id, 1)='9' then
+            select concat(st_id, '0');
+        else
+            SELECT CONCAT(left(st_id, length(st_id)-1), right(st_id, 1)+1) into st_id;
+        end if;
+
+    INSERT INTO stars(id, name, birthYear)
+    VALUES (st_id, st_name, birth);
+END IF;
+
+IF status = 0 THEN
+    select concat(output, " Information is added.") into output;
 END IF;
 
 END |
