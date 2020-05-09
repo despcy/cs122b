@@ -1,13 +1,11 @@
 package com.cs122b.project.Fabflix.Service;
 
 import com.cs122b.project.Fabflix.Response.*;
-import com.cs122b.project.Fabflix.model.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class MovieService {

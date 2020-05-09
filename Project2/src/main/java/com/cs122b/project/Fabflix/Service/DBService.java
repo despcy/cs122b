@@ -2,23 +2,20 @@ package com.cs122b.project.Fabflix.Service;
 
 import com.cs122b.project.Fabflix.Response.*;
 import com.cs122b.project.Fabflix.model.*;
-
 import com.cs122b.project.Fabflix.session.CartSession;
+import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import java.util.Date;
+
 import javax.servlet.http.HttpSession;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import org.jasypt.util.password.StrongPasswordEncryptor;
 
 @Service
 @Scope("singleton")
@@ -677,11 +674,26 @@ public class DBService {
         return response;
     }
 
-    public BaseResponse addStar(String name, String birth) {
+    public BaseResponse addStar(String name, String birth) throws SQLException {
         BaseResponse response = new BaseResponse(-1);
+        CallableStatement cs = connection.prepareCall("{CALL add_star(?,?,?,?,?)}");
 
+        cs.setString(1, name);
+        if (birth.equals("")) cs.setInt(2, 0);
+        else
+            cs.setInt(2, Integer.parseInt(birth));
+        cs.registerOutParameter(3,Types.INTEGER);
+        cs.registerOutParameter(4,Types.VARCHAR);
+        cs.registerOutParameter(5,Types.VARCHAR);
+        cs.executeUpdate();
 
-
+        int msg = cs.getInt(3);
+        String st_id = cs.getString(4);
+        String output = cs.getString(5);
+        if(msg == 0) {
+            response.setMessage(0);
+            response.setData(output);
+        }
         return response;
     }
 }

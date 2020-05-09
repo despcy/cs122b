@@ -1,20 +1,16 @@
 package com.cs122b.project.Fabflix.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.cs122b.project.Fabflix.Response.*;
 import com.cs122b.project.Fabflix.Service.CustomerService;
 import com.cs122b.project.Fabflix.Service.MovieService;
-import com.cs122b.project.Fabflix.Response.*;
 import com.cs122b.project.Fabflix.model.CartItem;
-import com.cs122b.project.Fabflix.model.Customer;
-import com.cs122b.project.Fabflix.model.Movie;
 import com.cs122b.project.Fabflix.session.CartSession;
 import com.cs122b.project.Fabflix.utils.RecaptchaVerifyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 
 
 @RestController
@@ -185,26 +181,14 @@ public class MovieController {
     public BaseResponse addMovie(@RequestParam("title") String title, @RequestParam("year") String year,
                                  @RequestParam("director") String director, @RequestParam("star") String starName,
                                  @RequestParam("genre") String genre){
-//        String role=(String)session.getAttribute(session.getId());
-//        if(!role.equals("admin")){
-//
-//            ar.setMessage(-1);
-//            return ar;
-//        }
+
         return movieService.addMovie(title, year, director, starName, genre);
     }
 
     @PostMapping("/dash/addStar")
     public BaseResponse addStar(@RequestParam("name") String name, @RequestParam("birth") String birth){
-//        String role=(String)session.getAttribute(session.getId());
-//        if(!role.equals("admin")){
-//
-//            ar.setMessage(-1);
-//            return ar;
-//        }
+
         return movieService.addStar(name, birth);
     }
-
-
 
 }
