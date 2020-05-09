@@ -7,6 +7,18 @@ public class Movie {
     private String title;
     private Integer year;
     private String director;
+
+
+
+    public ArrayList<String> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(ArrayList<String> genres) {
+        this.genres = genres;
+    }
+
+
     public ArrayList<String> genres=new ArrayList<>();
 
     public String getId() {
@@ -26,6 +38,7 @@ public class Movie {
     }
 
     public Integer getYear() {
+        if(year==-1)return 0;
         return year;
     }
 

@@ -1,8 +1,8 @@
 package com.cs122b.project;
 
 public class Star {
-    String name;
-    Integer birthYear;
+    public String name;
+    public Integer birthYear;
 
     public String getName() {
         return name;
@@ -13,6 +13,7 @@ public class Star {
     }
 
     public Integer getBirthYear() {
+        if(birthYear==-1)return 0;
         return birthYear;
     }
 

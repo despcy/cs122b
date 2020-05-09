@@ -12,6 +12,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -51,15 +52,16 @@ import java.util.logging.SimpleFormatter;
 public class CastParser extends DefaultHandler {
 	Logger logger = Logger.getLogger("CastParser");
 	FileHandler fh;
-	private ArrayList<StarInMovie> result;
-	StarInMovie curSIM;
+	private HashMap<String,ArrayList<String>> result;
 	String tmpVal;
+	String curstar;
+	String curmov;
 
 	CastParser() {
 
-		result = new ArrayList<>();
+		result = new HashMap<>();
 	}
-	public ArrayList<StarInMovie> getResult(){
+	public HashMap<String,ArrayList<String>> getResult(){
 		return result;
 	}
 
@@ -103,8 +105,9 @@ public class CastParser extends DefaultHandler {
 		super.startElement(uri, localName, qName, attributes);
 		tmpVal="";
 		if(qName.equalsIgnoreCase("m")){
+			curstar="";
+			curmov="";
 
-			curSIM=new StarInMovie();
 
 		}
 	}
@@ -113,27 +116,25 @@ public class CastParser extends DefaultHandler {
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		super.endElement(uri, localName, qName);
 		if(qName.equalsIgnoreCase("f")){
-			curSIM.setMovieID(tmpVal);
+			curmov=tmpVal;
 		}else if(qName.equalsIgnoreCase("a")){
-			curSIM.setStarName(tmpVal);
+			curstar=tmpVal;
 		}else if(qName.equalsIgnoreCase("m")){
-			if(curSIM==null){
-				//Drop
-				logger.warning("missing tag <m>");
-				return;
-			}
-			if(curSIM.getMovieID()==null){
+
+			if(curmov==null){
 				//Drop
 				logger.warning("missing movie id..Drop");
 				return;
 			}
-			if(curSIM.getStarName()==null){
+			if(curstar==null){
 				//Drop
 				logger.warning("missing star name...Drop");
 				return;
 			}
 
-			result.add(curSIM);
+			ArrayList<String>slist=result.getOrDefault(curmov,new ArrayList<>());
+			slist.add(curstar);
+			result.put(curmov,slist);
 
 		}
 	}

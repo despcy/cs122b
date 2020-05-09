@@ -44,7 +44,7 @@ public class ActorParser extends DefaultHandler {
     Logger logger = Logger.getLogger("ActorParser");
     FileHandler fh;
     private ArrayList<Star> result;
-    private HashSet<String> starname=new HashSet<>();
+    public  HashSet<String> starname=new HashSet<>();
     Star curStar;
     String tmpVal;
 
@@ -105,8 +105,9 @@ public class ActorParser extends DefaultHandler {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         super.endElement(uri, localName, qName);
 
+
         if(qName.equalsIgnoreCase("dob")){
-            if(tmpVal==""){
+            if(tmpVal.trim()==""){
                 curStar.setBirthYear(-1);
                 return;
             }
@@ -118,7 +119,7 @@ public class ActorParser extends DefaultHandler {
             }
 
         }else if(qName.equalsIgnoreCase("stagename")){
-            curStar.setName(tmpVal);
+            curStar.setName(tmpVal.trim());
         }else if(qName.equalsIgnoreCase("actor")){
             if(curStar==null){
                 //Drop
@@ -126,18 +127,23 @@ public class ActorParser extends DefaultHandler {
                 return;
             }
 
-            if(curStar.getName()==null){
+            if(curStar.getName()==null||curStar.getName()==""){
                 //Drop
                 logger.warning("missing star name...Drop");
                 return;
             }
-            if(curStar.getBirthYear()==null){
+            if(curStar.birthYear==null){
                 logger.warning("missing birth year for "+curStar.getName());
                 curStar.setBirthYear(-1);
                 return;
             }
 
-            result.add(curStar);
+           // System.out.println(curStar.getName());
+            if(!starname.contains(curStar.getName())){
+                result.add(curStar);
+                starname.add(curStar.getName());
+            }
+
 //            if(starname.contains(curStar.name)){
 //                System.out.println(curStar.name);
 //            }

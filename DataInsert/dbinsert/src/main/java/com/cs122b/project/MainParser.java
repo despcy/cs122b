@@ -70,6 +70,12 @@ public class MainParser extends DefaultHandler {
     Logger logger = Logger.getLogger("MainParser");
     FileHandler fh;
     private HashMap<String,Movie> result;//In-memory hash table
+
+    public HashMap<String, ArrayList<String>> getGenreMovMap() {
+        return genreMovMap;
+    }
+
+    HashMap<String,ArrayList<String>> genreMovMap;
     Movie curMovie;
     String tmpVal;
     String dirbackup="";
@@ -80,6 +86,7 @@ public class MainParser extends DefaultHandler {
     MainParser(){
 
         result=new HashMap<>();
+         genreMovMap=new HashMap<String,ArrayList<String>>();
 
     }
 
@@ -172,7 +179,7 @@ public class MainParser extends DefaultHandler {
             if(curMovie==null){
                 logger.warning("Bad format exception--missing <film> for <filmed>");
             }else{
-                if(tmpVal!=""){
+                if(tmpVal.trim()!=""){
                     logger.warning("Use <filmed> tag as movie ID "+tmpVal);
                     curMovie.setId(tmpVal);
                 }
@@ -181,7 +188,7 @@ public class MainParser extends DefaultHandler {
             if(curMovie==null){
                 logger.warning("Bad format exception--missing <film> for <fid>");
             }else{
-                if(tmpVal!=""){
+                if(tmpVal.trim()!=""){
                     curMovie.setId(tmpVal);
                 }
             }
@@ -223,6 +230,10 @@ public class MainParser extends DefaultHandler {
             }else{
                 if(tmpVal!=""){
                     curMovie.genres.add(tmpVal);//only last director will be stored
+                    ArrayList<String> mid=genreMovMap.getOrDefault(tmpVal,new ArrayList<>());
+                    mid.add(curMovie.getId());
+                    genreMovMap.put(tmpVal,mid);
+
                 }
             }
         }
@@ -233,4 +244,6 @@ public class MainParser extends DefaultHandler {
         super.characters(ch, start, length);
         tmpVal = new String(ch, start, length);
     }
+
+
 }
