@@ -90,7 +90,7 @@ public class CastParser extends DefaultHandler {
 
 			//parse the file and also register this class for call backs
 			sp.parse("casts124.xml", this);
-
+			fh.close();
 		} catch (SAXException se) {
 			se.printStackTrace();
 		} catch (ParserConfigurationException pce) {

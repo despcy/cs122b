@@ -8,7 +8,7 @@ rm -rf ~/tomcat/webapps/ROOT
 
 ./mvnw clean install
 
-mv target/Fabflix-0.0.1-SNAPSHOT.war ~/tomcat/webapp/ROOT.war
+mv target/Fabflix-0.0.1-SNAPSHOT.war ~/tomcat/webapps/ROOT.war
 
 sh ~/tomcat/bin/catalina.sh start
 
