@@ -14,14 +14,16 @@ DROP PROCEDURE IF EXISTS add_movie |
 CREATE PROCEDURE add_movie(IN mv_title VARCHAR(100),
     IN mv_year INTEGER, IN mv_director VARCHAR(100),
     IN st_name VARCHAR(50), IN gn_name VARCHAR(32),
-    OUT status INTEGER, OUT output VARCHAR(200))
+    OUT status INTEGER, OUT output VARCHAR(200),
+    OUT mv_id VARCHAR(10), OUT gn_id INTEGER,
+    OUT st_id VARCHAR(10))
 
 BEGIN
 
 -- 0. Declare Variables and check if star/genre provided
 DECLARE mv_exists, st_provided, st_exists, gn_provided, gn_exists BOOLEAN DEFAULT 0;
-DECLARE mv_id, st_id, temp VARCHAR(50);
-DECLARE gn_id INTEGER DEFAULT 0;
+-- DECLARE mv_id, st_id, temp VARCHAR(50);
+-- DECLARE gn_id INTEGER DEFAULT 0;
 
 SET status = 0;
 SET output = "";
@@ -137,7 +139,7 @@ CREATE PROCEDURE add_star(IN st_name VARCHAR(100),
 BEGIN
 
 -- 0. Declare Variables and check if star/genre provided
-DECLARE st_id VARCHAR(50);
+-- DECLARE st_id VARCHAR(50);
 DECLARE st_exists BOOLEAN DEFAULT 0;
 
 SET status = 0;

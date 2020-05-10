@@ -649,7 +649,7 @@ public class DBService {
 
     public BaseResponse addMovie(String title, String year, String director, String starName, String genre) throws SQLException {
         BaseResponse response = new BaseResponse(-1);
-        CallableStatement cs = connection.prepareCall("{CALL add_movie(?,?,?,?,?,?,?)}");
+        CallableStatement cs = connection.prepareCall("{CALL add_movie(?,?,?,?,?,?,?,?,?,?)}");
 
         cs.setString(1, title);
         cs.setInt(2, Integer.parseInt(year));
@@ -658,14 +658,21 @@ public class DBService {
         cs.setString(5, genre);
         cs.registerOutParameter(6,Types.INTEGER);
         cs.registerOutParameter(7,Types.VARCHAR);
+        cs.registerOutParameter(8,Types.VARCHAR);
+        cs.registerOutParameter(9,Types.INTEGER);
+        cs.registerOutParameter(10,Types.VARCHAR);
         cs.executeUpdate();
 
         System.out.println(title+"   "+year+"   "+director);
 
         int msg = cs.getInt(6);
         String output = cs.getString(7);
+        String mv_id = cs.getString(8);
+        String gn_id = cs.getString(9);
+        String st_id = cs.getString(10);
         System.out.println(msg);
         System.out.println(output);
+        output = output + " Movie id is "+ mv_id + " Genre id is "+ gn_id +" Star id is "+ st_id;
         if(msg == 0) {
             response.setMessage(0);
             response.setData(output);
@@ -690,6 +697,7 @@ public class DBService {
         int msg = cs.getInt(3);
         String st_id = cs.getString(4);
         String output = cs.getString(5);
+        output = output+" Star id is "+st_id;
         if(msg == 0) {
             response.setMessage(0);
             response.setData(output);
