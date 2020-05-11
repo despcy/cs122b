@@ -12,16 +12,24 @@ Video: https://www.youtube.com/watch?v=ehVolnZzvEc
 
 ## deployment instr:
 
+Website:  ``cd Project3 && sudo sh deploy.sh``
 
+DataImport: ``cd Datainsert/dbinsert && sudo sh run.sh``
 
 ## Prepared Statements:
 [DBService.java](./Project3/src/main/java/com/cs122b/project/Fabflix/Service/DBService.java)
 
 ## Two parsing time optimization strategies:
 
+1. In-memory hashmap: use hashmap to reduce duplication and drop no-matching data(invalied foreign key in stars_in_movies)
+
+2. bulk insert for all table
+
+note: star id is generated using MD5(starname).substring(0,7)+'0'
 
 ## Inconsistent data report from parsing：
 
+https://personalmicrosoftsoftware-my.sharepoint.com/:f:/g/personal/chenxy2_personalmicrosoftsoftware_uci_edu/Eks42YYnlndBoLE-kJbrnfYB9UEvBCLzi-iBCW1iyMf5rA?e=Ptjs8h
 
 ## Api Design:
 This is our api design document. Our front end and back end communicate base on this.
@@ -45,19 +53,19 @@ Chenxi Yang:
 4. Debug and test
 
 
-## Project2
-## DemoURL:
+## ~~Project2  🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶🐶~~
+## ~~DemoURL:~~
 
-Website: http://18.188.106.209:8080/ 
-Video: https://youtu.be/lAAsxAHhy08
+~~Website: http://18.188.106.209:8080/ 
+Video: https://youtu.be/lAAsxAHhy08~~
 
-## deployment instr:
+## ~~deployment instr:~~
 
-``sh ./deploy.sh``
+~~``sh ./deploy.sh``~~
 
-## substring Design:
+## ~~substring Design:~~
 
-**Index creation:**
+**~~Index creation:~~**
 
 ```sql
 use moviedb;
@@ -66,7 +74,7 @@ CREATE INDEX moviedirector ON movies (director);
 CREATE INDEX starname ON stars (name);
 ```
 
-**Query:**
+**~~Query:~~**
 
 ```sql
 select * from movies where 1=1 AND movies.title LIKE "%t%" AND movies.year = 2003 AND movies.director like "%d%" and id in (select distinct movieId from stars_in_movies inner join stars on stars_in_movies.starId = stars.id where name like '%s%') ORDER BY movies.title asc , (select rating from ratings where ratings.movieId=movies.id) asc LIMIT 10 OFFSET 0;
@@ -74,13 +82,13 @@ select * from movies where 1=1 AND movies.title LIKE "%t%" AND movies.year = 200
 
 note: ``where 1=1`` is designed for the convience of query formatting, make no sense in query.
 
-## Api Design:
+## ~~Api Design:~~
 This is our api design document. Our front end and back end communicate base on this.
 
 [Check API.md](./api.md)
 
 
-## contribution
+## ~~contribution~~
 
 Jingwen Mo:
 1. Refactoring the back end stucture from original Spring MVC(project 1) to Spring boot & RESTful
