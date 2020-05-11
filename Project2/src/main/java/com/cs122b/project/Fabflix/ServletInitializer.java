@@ -2,6 +2,7 @@ package com.cs122b.project.Fabflix;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
 
 public class ServletInitializer extends SpringBootServletInitializer {
 
@@ -10,4 +11,7 @@ public class ServletInitializer extends SpringBootServletInitializer {
 		return application.sources(FabflixApplication.class);
 	}
 
+
+
 }
+
