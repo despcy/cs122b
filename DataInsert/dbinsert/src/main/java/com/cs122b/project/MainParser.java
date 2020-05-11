@@ -115,6 +115,7 @@ public class MainParser extends DefaultHandler {
 
             //parse the file and also register this class for call backs
             sp.parse("mains243.xml", this);
+            fh.close();
 
         } catch (SAXException se) {
             se.printStackTrace();

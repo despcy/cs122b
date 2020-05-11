@@ -15,3 +15,5 @@ DataInsert/dbinsert/MainParser.log
 DataInsert/dbinsert/mains243.xml
 /employeeEmcrypt
 dump/
+deploydb.sh
+proj3starter.sql
