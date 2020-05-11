@@ -5,7 +5,9 @@ cs122b-spring20-team-60 created by GitHub Classroom
 
 ## DemoURL:
 
-Website: http://18.188.106.209:8080/ https://18.188.106.209:8443
+Website:  
+http://18.188.106.209:8080/   
+https://18.188.106.209:8443/   
 Video: https://www.youtube.com/watch?v=ehVolnZzvEc
 
 ## deployment instr:
