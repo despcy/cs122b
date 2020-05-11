@@ -1,6 +1,49 @@
 # cs122b-spring20-team-60
 cs122b-spring20-team-60 created by GitHub Classroom
 
+## Project3
+
+## DemoURL:
+
+Website: http://18.188.106.209:8080/ https://18.188.106.209:8443
+Video: https://www.youtube.com/watch?v=ehVolnZzvEc
+
+## deployment instr:
+
+
+
+## Prepared Statements:
+DBService.java
+
+## Two parsing time optimization strategies:
+
+
+## Inconsistent data report from parsing：
+
+
+## Api Design:
+This is our api design document. Our front end and back end communicate base on this.
+
+[Check API.md](./api.md)
+
+
+## contribution
+
+Jingwen Mo:
+1. Add reCAPTCHA
+2. Refractor original datebase query to preparedStatement
+3. Use encrypted password
+4. Implement the backend for admin login and Dashboard and also the stored procedure.
+5. Debug and test
+
+Chenxi Yang:
+1. Adding HTTPS(Springboot)
+2. Implement the frontend for admin login and Dashboard
+3. Implement XML parsing and optimization
+4. Debug and test
+
+
+## Project2
 ## DemoURL:
 
 Website: http://18.188.106.209:8080/ 
