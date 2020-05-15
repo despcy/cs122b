@@ -1,6 +1,5 @@
 package com.cs122b.project.Fabflix.Response;
 
-import com.cs122b.project.Fabflix.model.Movie;
 import com.cs122b.project.Fabflix.model.Star;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

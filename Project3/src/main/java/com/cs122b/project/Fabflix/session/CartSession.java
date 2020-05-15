@@ -1,7 +1,6 @@
 package com.cs122b.project.Fabflix.session;
 
 import com.cs122b.project.Fabflix.model.CartItem;
-import com.cs122b.project.Fabflix.model.Movie;
 
 import java.util.ArrayList;
 import java.util.HashMap;
