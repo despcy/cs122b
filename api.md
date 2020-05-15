@@ -22,16 +22,7 @@ message: -1->auth fail
 ```json
 {
    "message":0,
-   "data":[
-         {
-            "id":"mm1",
-            "title":"this is title"
-         },
-         {
-            "id":"mm2",
-            "title":"this is title"
-         }
-         ]
+   "data":["t1","t2","t3"]
          
   }
 ```
