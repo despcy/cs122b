@@ -838,10 +838,23 @@ public class DBService {
 
     public BaseResponse movieSearch(String text) throws SQLException {
         BaseResponse response = new BaseResponse(-1);
-        text = text + "*";
+        StringBuilder sb = new StringBuilder();
+        sb.append("+");
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) != ' ') {
+                sb.append(text.charAt(i));
+            }else {
+                sb.append("*");
+                sb.append(" ");
+                sb.append("+");
+            }
+        }
+        sb.append("*");
+        String newTitle = sb.toString();
+
         String sql = "select id, title from movies WHERE MATCH (movies.title) AGAINST (? IN BOOLEAN MODE);";
         PreparedStatement stm = connection.prepareStatement(sql);
-        stm.setString(1, text);
+        stm.setString(1, newTitle);
         ResultSet q1 = stm.executeQuery();
         List<Movie> res = new ArrayList<>();
         int count = 0;
