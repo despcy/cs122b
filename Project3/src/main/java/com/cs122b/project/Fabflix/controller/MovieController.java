@@ -22,12 +22,6 @@ public class MovieController {
 
     private CustomerService customerService;
 
-//    @GetMapping("/movies")
-//    public List<Movie> ListMovies() {
-//        // the Movie list Page shows the top 20 rated movies, sorted by the rating
-//        return movieService.getTop20Movies();
-//    }
-
     @GetMapping("/movie")
     public MovieResponse SingleMovie(@RequestParam("movieId") String movieId) {
 

@@ -65,7 +65,7 @@ public class MovieService {
                                  String sort, String order) {
         SearchResponse sr = new SearchResponse();
         try {
-            sr=dbService.getSearchResult(title, year, director, starName, page, pagesize, sort, order);
+            sr=dbService.getSearchResult2(title, year, director, starName, page, pagesize, sort, order);
         } catch (Exception e) {
             e.printStackTrace();
         }
