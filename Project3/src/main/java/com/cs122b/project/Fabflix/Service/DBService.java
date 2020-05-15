@@ -846,7 +846,7 @@ public class DBService {
         List<Movie> res = new ArrayList<>();
         int count = 0;
         while(q1.next()) {
-            if (count > 10) break;
+            if (count >= 10) break;
             Movie m = new Movie();
             m.setId(q1.getString(1));
             m.setTitle(q1.getString(2));
