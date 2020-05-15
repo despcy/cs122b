@@ -185,4 +185,9 @@ public class MovieController {
         return movieService.addStar(name, birth);
     }
 
+    @GetMapping("/fsearch")
+    public BaseResponse fullTextSearch(@RequestParam("text") String text) {
+        return movieService.fullSearch(text);
+    }
+
 }

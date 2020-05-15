@@ -166,5 +166,16 @@ public class MovieService {
 
         return response;
     }
+
+    public BaseResponse fullSearch(String text) {
+        BaseResponse response = new BaseResponse(-1);
+        try {
+            response = dbService.movieSearch(text);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
 }
 
