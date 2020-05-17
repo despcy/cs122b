@@ -17,6 +17,7 @@ public class SessionConf implements WebMvcConfigurer {
         registry.addInterceptor(new SecurityInterceptor())
                 //排除拦截
                 .excludePathPatterns("/api/login")
+                .excludePathPatterns("/api/android_login")
                 .excludePathPatterns("/api/dash/login")
                 .excludePathPatterns("/api/logout")
 

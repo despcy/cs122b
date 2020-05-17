@@ -52,6 +52,23 @@ public class MovieController {
         return response;
     }
 
+    // android login without recap
+    @PostMapping("/android_login")
+    public BaseResponse AndroidLogin(@RequestParam("username")String email, @RequestParam("password") String password,
+                                      HttpSession session) throws Exception {
+
+        BaseResponse response = movieService.login(email,password);
+        System.out.println("aaaaa");
+        System.out.println(email+" "+password);
+        if (response.getMessage() == 0){
+            session.setAttribute(session.getId(),response);
+            session.setAttribute("cart",new CartSession());
+        }
+
+
+        return response;
+    }
+
     @RequestMapping(value = "/user")
     public BaseResponse getUserName(HttpSession session){
 
