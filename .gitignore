@@ -17,3 +17,4 @@ DataInsert/dbinsert/mains243.xml
 dump/
 deploydb.sh
 proj3starter.sql
+**/node_modules/
