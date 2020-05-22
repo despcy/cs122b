@@ -53,8 +53,6 @@ public class Login extends ActionBarActivity {
             }
         });
 
-        Intent intent=new Intent(this,MainPageActivity.class);
-        startActivity(intent);
     }
 
     public void login() {

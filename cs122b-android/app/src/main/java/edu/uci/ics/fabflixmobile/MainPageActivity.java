@@ -31,11 +31,11 @@ public class MainPageActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
 
-        title = findViewById(R.id.titleView);
-        year = findViewById(R.id.yearView);
-        directer = findViewById(R.id.directerView);
-        star = findViewById(R.id.starView);
-        searchButton = findViewById(R.id.searchButton);
+        title = findViewById(R.id.editText);
+        year = findViewById(R.id.editText1);
+        directer = findViewById(R.id.editText2);
+        star = findViewById(R.id.editText3);
+        searchButton = findViewById(R.id.searchbtn);
 
         url = "http://10.0.0.223:8080/api/";
 
@@ -46,15 +46,15 @@ public class MainPageActivity extends Activity {
             }
         });
 
-        Intent intent=new Intent(this,ListViewActivity.class);
-        startActivity(intent);
+//        Intent intent=new Intent(this,ListViewActivity.class);
+//        startActivity(intent);
     }
 
     public void search(){
         // Use the same network queue across our application
         final RequestQueue queue = NetworkManager.sharedManager(this).queue;
         //request type is POST
-        final StringRequest loginRequest = new StringRequest(Request.Method.GET, url + "search", new Response.Listener<String>() {
+        final StringRequest loginRequest = new StringRequest(Request.Method.GET, url + "search?title="+title.getText()+"&year="+year.getText()+"&director="+directer.getText()+"&star="+star.getText()+"&page=1&pagesize=20&sort=title_rating&order=asc_desc", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 //TODO should parse the json response to redirect to appropriate functions.
@@ -81,20 +81,21 @@ public class MainPageActivity extends Activity {
                 Log.d("login.error", error.toString());
                 Toast.makeText(getApplicationContext(),"search error",Toast.LENGTH_SHORT);
             }
-        })
-        {
-            @Override
-            protected Map<String, String> getParams() {
-                // Post request form data
-                final Map<String, String> params = new HashMap<>();
-                params.put("title", title.getText().toString());
-                params.put("year", year.getText().toString());
-                params.put("director", directer.getText().toString());
-                params.put("star", star.getText().toString());
-
-                return params;
-            }
-        };
+        });
+//        {
+//            @Override
+//            protected Map<String, String> getParams() {
+//                // Post request form data
+//                final Map<String, String> params = new HashMap<>();
+//
+//                params.put("title", title.getText().toString());
+//                params.put("year", year.getText().toString());
+//                params.put("director", directer.getText().toString());
+//                params.put("star", star.getText().toString());
+//
+//                return params;
+//            }
+//        };
 
         // !important: queue.add is where the login request is actually sent
         queue.add(loginRequest);
