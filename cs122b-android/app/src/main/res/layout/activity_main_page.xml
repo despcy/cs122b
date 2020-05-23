@@ -54,7 +54,7 @@
                   android:layout_marginLeft="5dp" android:layout_marginStart="5dp" android:layout_marginRight="5dp"
                   android:layout_marginEnd="5dp" android:layout_marginTop="5dp"
                   app:layout_constraintBottom_toBottomOf="@+id/textView1" android:id="@+id/editText1"
-                  android:textColor="#00000000"/>
+            android:textColor="@color/abc_input_method_navigation_guard"/>
 
 
     </android.support.constraint.ConstraintLayout>
@@ -77,7 +77,7 @@
                   android:layout_marginLeft="5dp" android:layout_marginStart="5dp" android:layout_marginRight="5dp"
                   android:layout_marginEnd="5dp" android:layout_marginTop="5dp"
                   app:layout_constraintBottom_toBottomOf="@+id/textView2" android:id="@+id/editText2"
-                  android:textColor="#00000000"/>
+            android:textColor="@color/abc_input_method_navigation_guard"/>
 
 
     </android.support.constraint.ConstraintLayout>
@@ -100,7 +100,7 @@
                   android:layout_marginLeft="5dp" android:layout_marginStart="5dp" android:layout_marginRight="5dp"
                   android:layout_marginEnd="5dp" android:layout_marginTop="5dp"
                   app:layout_constraintBottom_toBottomOf="@+id/textView3" android:id="@+id/editText3"
-                  android:textColor="#00000000"/>
+            android:textColor="@color/abc_input_method_navigation_guard"/>
 
 
     </android.support.constraint.ConstraintLayout>
