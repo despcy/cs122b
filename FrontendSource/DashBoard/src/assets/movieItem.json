@@ -1,0 +1,25 @@
+{
+    "message": 0,
+    "data": {
+        "id": "1234",
+        "title": "titleeee",
+        "year": 2012,
+        "director": "ycx",
+        "rating": 3.4,
+        "stars": [{
+                "id": "s4",
+                "name": "fff"
+            },
+            {
+                "id": "s5",
+                "name": "ffdf"
+            }
+        ],
+        "genres": [
+            "gen1",
+            "gen2",
+            "gen3",
+            "gen4"
+        ]
+    }
+}
