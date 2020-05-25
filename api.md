@@ -13,6 +13,31 @@ message: -1->auth fail
 
 ```
 
+## Full text Search:
+
+``/api/fsearch?text=adfkjhe``
+
+### response:
+
+```json
+{
+   "message":0,
+   "data":[
+   {
+   "id":"mdfs",
+   "title":"tttt"
+   },
+   {
+   
+   }
+   ]
+         
+  }
+```
+
+
+
+
 ## Data field:
 
 ### Login:

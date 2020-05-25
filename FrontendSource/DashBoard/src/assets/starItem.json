@@ -1,0 +1,17 @@
+{
+    "message": 0,
+    "data": {
+        "id": "2233",
+        "name": "hahahha",
+        "birthYear": 2020,
+        "movies": [{
+                "id": "2233",
+                "name": "mov1"
+            },
+            {
+                "id": "3344",
+                "name": "mov2"
+            }
+        ]
+    }
+}

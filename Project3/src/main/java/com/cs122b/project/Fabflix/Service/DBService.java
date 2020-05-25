@@ -129,7 +129,139 @@ public class DBService {
         return star;
     }
 
+    public SearchResponse getSearchResult2(String title, String year, String director, String starName, int page, int pagesize,
+                                          String sort, String order) throws Exception {
 
+        ArrayList<Movie> m_list = new ArrayList<>();
+        String orderByCondition = "";
+        String searchCondition = "where 1=1";
+        String limitCondition = "";
+        String starCondition = "";
+        ArrayList<String> qparam=new ArrayList<>();
+
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("+");
+        for (int i = 0; i < title.length(); i++) {
+            if (title.charAt(i) != ' ') {
+                sb.append(title.charAt(i));
+            }else {
+                sb.append("*");
+                sb.append(" ");
+                sb.append("+");
+            }
+        }
+        sb.append("*");
+        String newTitle = sb.toString();
+
+        if (title != null && !title.isEmpty())
+        {
+            searchCondition = searchCondition +" AND MATCH (movies.title) AGAINST (? IN BOOLEAN MODE)";
+            qparam.add(newTitle);
+        }
+
+        if (year != null && !year.isEmpty())
+        {
+            searchCondition = searchCondition + " AND movies.year = ?";
+            qparam.add(year);
+        }
+
+        if (director != null && !director.isEmpty())
+        {
+            searchCondition = searchCondition + " AND movies.director like ?";
+            qparam.add("%"+director+"%");
+        }
+        if (starName != null && !starName.isEmpty())
+        {
+            starCondition = " and id in (select distinct movieId from stars_in_movies inner join stars on stars_in_movies.starId = stars.id where name like ?)";
+            qparam.add("%"+starName+"%");
+        }
+
+        limitCondition = limitCondition + " LIMIT ?";
+
+        int offset = 0;
+        if (page == 1) offset = 0;
+        else {
+            offset = (page - 1) * pagesize;
+
+        }
+        limitCondition = limitCondition + " OFFSET ?";
+        if (sort != null && !sort.isEmpty())
+        {
+            String ord1="asc";
+            String ord2="desc";
+            if(order.equals("asc_asc")){
+                ord1="asc";
+                ord2="asc";
+            }else if(order.equals("asc_desc")){
+                ord1="asc";
+                ord2="desc";
+            }else if(order.equals("desc_asc")){
+                ord1="desc";
+                ord2="asc";
+            }
+            else if(order.equals("desc_desc")){
+                ord1="desc";
+                ord2="desc";
+            }
+
+            if (sort.equals("title_rating"))
+            {
+                orderByCondition = " ORDER BY movies.title "+ord1+" , (select rating from ratings where ratings.movieId=movies.id) "+ ord2;
+            }
+            else if (sort.equals("rating_title"))
+            {
+                orderByCondition = " ORDER BY (select rating from ratings where ratings.movieId=movies.id) "+ord1+" , movies.title "+ ord2;
+            }
+        }
+
+
+        //pagenation
+        String querystr="select count(*) from movies "+searchCondition;
+
+        if(starCondition!=""){
+            querystr+=starCondition;
+        }
+
+
+        PreparedStatement stmt=connection.prepareStatement(querystr);
+        System.out.println(querystr);
+        for(int i=0;i<qparam.size();i++){
+            stmt.setString(i+1,qparam.get(i));
+        }
+
+        ResultSet q1=stmt.executeQuery();
+        long items = 0;
+        while (q1.next()) {
+            items = q1.getLong(1);}
+
+        querystr="select * from movies "+searchCondition;
+
+        if(starCondition!=""){
+            querystr+=starCondition;
+        }
+        querystr +=orderByCondition;
+        querystr+=limitCondition;
+
+
+        stmt=connection.prepareStatement(querystr);
+        for(int i=0;i<qparam.size();i++){
+            stmt.setString(i+1,qparam.get(i));
+        }
+        stmt.setInt(qparam.size()+1,pagesize);
+        stmt.setInt(qparam.size()+2,offset);
+
+        m_list = moviesFetch2(stmt,true);
+        Data data = new Data();
+        data.setMovies(m_list);
+        data.setCurPage(page);
+        data.setPagesize(pagesize);
+        data.setTotalItem(items);
+        SearchResponse sr = new SearchResponse();
+        sr.setMessage(0);
+        sr.setData(data);
+        return sr;
+    }
 
     public SearchResponse getSearchResult(String title, String year, String director, String starName, int page, int pagesize,
                                           String sort, String order) throws Exception {
@@ -247,7 +379,6 @@ public class DBService {
         sr.setMessage(0);
         sr.setData(data);
         return sr;
-
     }
 
     private ArrayList<Movie> moviesFetch2(PreparedStatement stat,Boolean limit) throws Exception {
@@ -561,7 +692,8 @@ public class DBService {
                 response.setData(cus);
             }
 
-        }
+        }else
+            response.setMessage(-1);
         return response;
     }
 
@@ -702,6 +834,41 @@ public class DBService {
             response.setMessage(0);
             response.setData(output);
         }
+        return response;
+    }
+
+    public BaseResponse movieSearch(String text) throws SQLException {
+        BaseResponse response = new BaseResponse(-1);
+        StringBuilder sb = new StringBuilder();
+        sb.append("+");
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) != ' ') {
+                sb.append(text.charAt(i));
+            }else {
+                sb.append("*");
+                sb.append(" ");
+                sb.append("+");
+            }
+        }
+        sb.append("*");
+        String newTitle = sb.toString();
+
+        String sql = "select id, title from movies WHERE MATCH (movies.title) AGAINST (? IN BOOLEAN MODE);";
+        PreparedStatement stm = connection.prepareStatement(sql);
+        stm.setString(1, newTitle);
+        ResultSet q1 = stm.executeQuery();
+        List<Movie> res = new ArrayList<>();
+        int count = 0;
+        while(q1.next()) {
+            if (count >= 10) break;
+            Movie m = new Movie();
+            m.setId(q1.getString(1));
+            m.setTitle(q1.getString(2));
+            res.add(m);
+            count++;
+        }
+        response.setMessage(0);
+        response.setData(res);
         return response;
     }
 }

@@ -1,0 +1,16 @@
+{
+    "message": 0,
+    "data": [{
+            "movieId": "m123",
+            "movieTitle": "haha",
+            "quantity": 2,
+            "price": 344
+        },
+        {
+            "movieId": "m1213",
+            "movieTitle": "hafaha",
+            "quantity": 2,
+            "price": 3454
+        }
+    ]
+}

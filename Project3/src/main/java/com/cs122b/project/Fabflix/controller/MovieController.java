@@ -22,12 +22,6 @@ public class MovieController {
 
     private CustomerService customerService;
 
-//    @GetMapping("/movies")
-//    public List<Movie> ListMovies() {
-//        // the Movie list Page shows the top 20 rated movies, sorted by the rating
-//        return movieService.getTop20Movies();
-//    }
-
     @GetMapping("/movie")
     public MovieResponse SingleMovie(@RequestParam("movieId") String movieId) {
 
@@ -55,6 +49,23 @@ public class MovieController {
             session.setAttribute(session.getId(),response);
             session.setAttribute("cart",new CartSession());
         }
+        return response;
+    }
+
+    // android login without recap
+    @PostMapping("/android_login")
+    public BaseResponse AndroidLogin(@RequestParam("username")String email, @RequestParam("password") String password,
+                                      HttpSession session) throws Exception {
+
+        BaseResponse response = movieService.login(email,password);
+        System.out.println("aaaaa");
+        System.out.println(email+" "+password);
+        if (response.getMessage() == 0){
+            session.setAttribute(session.getId(),response);
+            //session.setAttribute("cart",new CartSession());
+        }
+
+        System.out.println(response);
         return response;
     }
 
@@ -189,6 +200,11 @@ public class MovieController {
     public BaseResponse addStar(@RequestParam("name") String name, @RequestParam("birth") String birth){
 
         return movieService.addStar(name, birth);
+    }
+
+    @GetMapping("/fsearch")
+    public BaseResponse fullTextSearch(@RequestParam("text") String text) {
+        return movieService.fullSearch(text);
     }
 
 }

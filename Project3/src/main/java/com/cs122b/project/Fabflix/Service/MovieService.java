@@ -65,7 +65,7 @@ public class MovieService {
                                  String sort, String order) {
         SearchResponse sr = new SearchResponse();
         try {
-            sr=dbService.getSearchResult(title, year, director, starName, page, pagesize, sort, order);
+            sr=dbService.getSearchResult2(title, year, director, starName, page, pagesize, sort, order);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -160,6 +160,17 @@ public class MovieService {
         BaseResponse response = new BaseResponse(-1);
         try {
             response = dbService.addStar(name, birth);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+    public BaseResponse fullSearch(String text) {
+        BaseResponse response = new BaseResponse(-1);
+        try {
+            response = dbService.movieSearch(text);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,9 +1,6 @@
 
 package com.cs122b.project.Fabflix.Response;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class SearchResponse {
 
     private Integer message;
