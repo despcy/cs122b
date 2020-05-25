@@ -74,7 +74,7 @@ ListView
   watch: {
     // whenever question changes, this function will run
     selected: function (item) {
-      console.log(item+"-selected");
+      
       this.title=item;
     },
     title: function (tit) {
@@ -82,12 +82,11 @@ ListView
 
       if(tit!=this.selected&&this.showMe==true){
         //request data
-         console.log(tit);
-          console.log(this.lock);
+    
         if(this.lock==false){
           this.lock=true;
-          console.log("locked")
-          setTimeout((tit)=>{this.lock=false;console.log("unlock");if(tit!=this.title){this.getSugg();}},300)
+         
+          setTimeout((tit)=>{this.lock=false;if(tit!=this.title){this.getSugg();}},300)
           this.getSugg();
         }
         
@@ -128,7 +127,7 @@ ListView
       var rm=this.remoteMethod;
       this.items.forEach(function(entry) {
         if(entry.title==sele){
-          console.log(entry);
+          
           rm(entry.id);
 
           return;
@@ -139,14 +138,16 @@ ListView
     remoteMethod(query) {
       //go to single movie page
      
-      console.log(query);
+      
       this.$router.push({name:'Item',params:{type:'movie',id: query}});
     
     },
     getSugg(){
       //do logic here
+      console.log("Query init for "+this.title);
       if(this.hash[this.title]!=null){
         this.items=this.hash[this.title];
+        console.log(this.title +" Found in local cache");
       }else{
         var qkey=this.title;
           this.axios.get('/api/fsearch?text='+this.title).then(
@@ -154,6 +155,8 @@ ListView
           if(response.data.message == 0){
             this.items=response.data.data;
             this.hash[qkey]=response.data.data;
+            console.log(this.title +" Found in Server");
+            console.log(this.hash);
           }else if(response.data.message == -1){
             alert('Auth Fail '+response.data.data);
           }else{
