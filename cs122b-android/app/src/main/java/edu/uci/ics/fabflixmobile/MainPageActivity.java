@@ -37,7 +37,7 @@ public class MainPageActivity extends Activity {
         star = findViewById(R.id.editText3);
         searchButton = findViewById(R.id.searchbtn);
 
-        url = "http://10.0.0.223:8080/api/";
+        url = Constant.host+"/api/";
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,9 +63,11 @@ public class MainPageActivity extends Activity {
 
                     Log.d("search.success", response);//
 
+                    String tmpsurl=url + "search?title="+title.getText()+"&year="+year.getText()+"&director="+directer.getText()+"&star="+star.getText()+"&pagesize=20&sort=title_rating&order=asc_desc&page=";
                     //initialize the activity(page)/destination
                     Intent listPage = new Intent(MainPageActivity.this, ListViewActivity.class);
                     listPage.putExtra("data", response);
+                    listPage.putExtra("url",tmpsurl);
 
                     startActivity(listPage);
                 }else {

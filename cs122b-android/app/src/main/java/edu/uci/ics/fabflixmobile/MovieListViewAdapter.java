@@ -43,18 +43,22 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
 //        rowBinding.executePendingBindings();
 //        return rowBinding.getRoot();
 
+        TextView idnum=view.findViewById(R.id.idnum);
 
-        TextView titleView = view.findViewById(R.id.title);
-        TextView year = view.findViewById(R.id.year);
-        TextView dir = view.findViewById(R.id.director);
-        TextView gen = view.findViewById(R.id.genre);
-        TextView sta = view.findViewById(R.id.star);
+        TextView titleView = view.findViewById(R.id.title_ls);
+        TextView year = view.findViewById(R.id.year_ls);
+        TextView dir = view.findViewById(R.id.director_ls);
+        TextView gen = view.findViewById(R.id.genre_ls);
+        TextView sta = view.findViewById(R.id.star_ls);
+        TextView rat=view.findViewById(R.id.rating_ls);
 
-        titleView.setText(movie.getTitle());
-        year.setText(movie.getYear());
-        dir.setText(movie.getDirector());
-        gen.setText(G2S(movie));
-        sta.setText(S2S(movie));
+        idnum.setText("#"+String.valueOf(position+1));
+        titleView.setText("Title:\n "+movie.getTitle());
+        year.setText("Year:\n "+String.valueOf(movie.getYear()));
+        dir.setText("Director:\n "+movie.getDirector());
+        gen.setText("Genres:\n "+G2S(movie));
+        sta.setText("Stars:\n "+S2S(movie));
+        rat.setText("Rating:\n "+movie.getRating());
 //        TextView subtitle_g3 = view.findViewById(R.id.subtitle_g3);
 //        TextView subtitle_s1 = view.findViewById(R.id.subtitle_s1);
 //        TextView subtitle_s2 = view.findViewById(R.id.subtitle_s2);
@@ -77,7 +81,10 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
         StringBuilder sb=new StringBuilder();
         for(Genre g:tp){
             sb.append(g.getName());
-            sb.append(" | ");
+            sb.append(" , ");
+        }
+        if(sb.length()>0){
+            sb.delete(sb.length()-3,sb.length());
         }
         return sb.toString();
     }
@@ -87,7 +94,10 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
         StringBuilder sb=new StringBuilder();
         for(Star g:tp){
             sb.append(g.getName());
-            sb.append(" | ");
+            sb.append(" , ");
+        }
+        if(sb.length()>0){
+            sb.delete(sb.length()-3,sb.length());
         }
         return sb.toString();
     }
