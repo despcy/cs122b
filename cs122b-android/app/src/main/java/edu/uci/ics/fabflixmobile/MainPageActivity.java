@@ -71,7 +71,8 @@ public class MainPageActivity extends Activity {
 
                     startActivity(listPage);
                 }else {
-                    Toast.makeText(getApplicationContext(),"search fail!",Toast.LENGTH_LONG);
+                    Toast t = Toast.makeText(getApplicationContext(),"search fail!",Toast.LENGTH_LONG);
+                    t.show();
                 }
 
 
@@ -81,7 +82,8 @@ public class MainPageActivity extends Activity {
             public void onErrorResponse(VolleyError error) {
                 // error
                 Log.d("login.error", error.toString());
-                Toast.makeText(getApplicationContext(),"search error",Toast.LENGTH_SHORT);
+                Toast t = Toast.makeText(getApplicationContext(),"search error",Toast.LENGTH_SHORT);
+                t.show();
             }
         });
 

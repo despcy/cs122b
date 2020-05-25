@@ -78,7 +78,8 @@ public class ListViewActivity extends Activity {
 
         if(curPage*20>totalItem){
             //no nextPage
-            Toast.makeText(v.getContext(),"No Next page",Toast.LENGTH_SHORT);
+            Toast t = Toast.makeText(v.getContext(),"No Next page",Toast.LENGTH_SHORT);
+            t.show();
         }else{
             curPage++;
             TextView tmp=((TextView)findViewById(R.id.pagenum));
@@ -92,7 +93,8 @@ public class ListViewActivity extends Activity {
 
         if(curPage==1){
             //no prevPage
-            Toast.makeText(v.getContext(),"No previous page",Toast.LENGTH_SHORT);
+            Toast t = Toast.makeText(v.getContext(),"No previous page",Toast.LENGTH_SHORT);
+            t.show();
         }else{
             curPage--;
             TextView tmp=((TextView)findViewById(R.id.pagenum));
