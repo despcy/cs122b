@@ -692,7 +692,8 @@ public class DBService {
                 response.setData(cus);
             }
 
-        }
+        }else
+            response.setMessage(-1);
         return response;
     }
 

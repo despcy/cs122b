@@ -61,7 +61,7 @@ public class MainPageActivity extends Activity {
                 System.out.println(response);
                 if (response.contains("\"message\":0")) {
 
-                    Log.d("login.success", response);///////////???
+                    Log.d("search.success", response);//
 
                     //initialize the activity(page)/destination
                     Intent listPage = new Intent(MainPageActivity.this, ListViewActivity.class);
@@ -82,20 +82,6 @@ public class MainPageActivity extends Activity {
                 Toast.makeText(getApplicationContext(),"search error",Toast.LENGTH_SHORT);
             }
         });
-//        {
-//            @Override
-//            protected Map<String, String> getParams() {
-//                // Post request form data
-//                final Map<String, String> params = new HashMap<>();
-//
-//                params.put("title", title.getText().toString());
-//                params.put("year", year.getText().toString());
-//                params.put("director", directer.getText().toString());
-//                params.put("star", star.getText().toString());
-//
-//                return params;
-//            }
-//        };
 
         // !important: queue.add is where the login request is actually sent
         queue.add(loginRequest);

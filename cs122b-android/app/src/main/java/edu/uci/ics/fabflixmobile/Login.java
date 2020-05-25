@@ -84,7 +84,9 @@ public class Login extends ActionBarActivity {
                     //without starting the activity/page, nothing would happen
                     startActivity(mainPage);
                 }else {
-                    Toast.makeText(getApplicationContext(),"incorrect username and password",Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(getApplicationContext(),"Incorrect username and password",Toast.LENGTH_LONG);
+                    toast.show();
+                    message.setText("Incorrect username and password");
                 }
 
 

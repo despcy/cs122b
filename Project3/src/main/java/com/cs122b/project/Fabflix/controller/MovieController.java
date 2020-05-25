@@ -62,10 +62,10 @@ public class MovieController {
         System.out.println(email+" "+password);
         if (response.getMessage() == 0){
             session.setAttribute(session.getId(),response);
-            session.setAttribute("cart",new CartSession());
+            //session.setAttribute("cart",new CartSession());
         }
 
-
+        System.out.println(response);
         return response;
     }
 
