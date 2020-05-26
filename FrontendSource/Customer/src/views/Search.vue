@@ -57,7 +57,7 @@ ListView
           items:[{"id":"12f","title":"fff"},{"id":"126f","title":"fhff"}],
           titlemode:false,
           selected:{},
-          lock:false,
+          prev:'',
           hash:{}
           
       }
@@ -82,14 +82,17 @@ ListView
 
       if(tit!=this.selected&&this.showMe==true){
         //request data
-    
-        if(this.lock==false){
-          this.lock=true;
-         
-          setTimeout((tit)=>{this.lock=false;if(tit!=this.title){this.getSugg();}},300)
-          this.getSugg();
-        }
-        
+
+   
+          
+          setTimeout((tit)=>{
+ 
+          if(tit==this.title&&tit!=this.selected&&this.showMe==true)
+          {
+            this.getSugg();
+          
+          }},300,tit)
+
 
       }
     }
@@ -114,6 +117,7 @@ ListView
     titleInputEnter(){
 
       this.titlemode=false;
+      this.onSubmit();
     },
     titleInputClick(){
      
@@ -143,6 +147,7 @@ ListView
     
     },
     getSugg(){
+     
       //do logic here
       console.log("Query init for "+this.title);
       if(this.hash[this.title]!=null){
