@@ -1,6 +1,31 @@
 # cs122b-spring20-team-60
 cs122b-spring20-team-60 created by GitHub Classroom
 
+## Project4
+
+## DemoURL:
+
+Website:  
+http://18.188.106.209:8080/   
+https://18.188.106.209:8443/   
+
+Video: https://youtu.be/JqRsP_cgLZA
+
+## Deployment:
+
+
+
+## Contribution:
+Jingwen Mo:
+1. Implement full-text search
+2. Implement backend for Autocomplete
+3. Implement Android Login and Movie List Page
+
+Chenxi Yang:
+1. Implement frontend for Autocomplete
+2. Implement Android Search and Single Movie Page
+
+
 ## Project3
 
 ## DemoURL:
