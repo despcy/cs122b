@@ -19,7 +19,7 @@ Website: cd Project3 && sudo sh deploy.sh
 
 the code for frontend auto-complete:  https://github.com/UCI-Chenli-teaching/cs122b-spring20-team-60/blob/master/FrontendSource/Customer/src/views/Search.vue
 
-**Note: since the aws EC2 instance has limited memory and CPU, we can not install vue-cli, which is essencial to build the forntend on the server, therefore we can not demo build on the EC2.  We can only build it locally and deploy the built target to our website resource folder**
+**Note: For the frontend, we use Vue.js framework. Since the aws EC2 instance has limited memory and CPU, we can not install vue-cli, which is essencial to build the forntend on the server, therefore we can not demo build on the EC2.  We can only build it locally and deploy the built target to our website resource folder**
 
 ## Contribution:
 Jingwen Mo:
