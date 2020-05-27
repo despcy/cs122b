@@ -4,11 +4,13 @@ import com.cs122b.project.Fabflix.Response.*;
 import com.cs122b.project.Fabflix.model.*;
 import com.cs122b.project.Fabflix.session.CartSession;
 import org.jasypt.util.password.StrongPasswordEncryptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,31 +23,55 @@ import java.util.List;
 @Scope("singleton")
 public class DBService {
     private Connection connection;
+    @Autowired
+    private DataSource dataSource;
+
     public DBService(@Value("${database.dbname}") String dbName,@Value("${database.username}") String userName,@Value("${database.password}") String password){
 
         // Connect to the test database
-        try {
+       // try {
             // Incorporate mySQL driver
-            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-            connection = DriverManager.getConnection("jdbc:mysql:///" + dbName + "?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT",
-                    userName, password);
+//            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+//            connection = DriverManager.getConnection("jdbc:mysql:///" + dbName + "?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT",
+//                    userName, password);
 
-        }catch (Exception e){
-            System.out.println("jdbc:mysql:///" + dbName + "?autoReconnect=true&useSSL=false  "+userName +" "+password);
-            System.out.println(e.toString());
+//            Context initCtx = new InitialContext();
+//
+//            Context envCtx = (Context) initCtx.lookup("java:comp/env");
+//            if (envCtx == null)
+//                System.out.println("envCtx is NULL");
 
-        }
+            // Look up our data source
+            //DataSource ds = (DataSource) envCtx.lookup("jdbc/moviedb");
 
-        if (connection != null) {
-            System.out.println("Connection established!!");
-            System.out.println();
-        }
+     //       DataSource ds = dataSource;
+
+            // the following commented lines are direct connections without pooling
+            //Class.forName("org.gjt.mm.mysql.Driver");
+            //Class.forName("com.mysql.jdbc.Driver").newInstance();
+            //Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
+//            System.out.println(dataSource);
+//            if (ds == null)
+//                System.out.println("ds is null.");
+//            connection = ds.getConnection();
+//
+//        }catch (Exception e){
+//            System.out.println(e.toString());
+//
+//        }
+//
+//        if (connection != null) {
+//            System.out.println("Connection established!!");
+//            System.out.println();
+//        }
     }
 
     public Movie getMovieByID(String movieID) throws Exception{
 
+
+
         String query="select * from movies where movies.id = ?";
-        PreparedStatement Stmt=connection.prepareStatement(query);
+        PreparedStatement Stmt=dataSource.getConnection().prepareStatement(query);
         Stmt.setString(1,movieID);
 
         ArrayList<Movie> result=moviesFetch2(Stmt,false);
@@ -103,7 +129,7 @@ public class DBService {
 
     public Star getStarById(String starId) throws Exception{
         String query = "select * from movies where movies.id in (select movieId from stars_in_movies where starId = ?) order by movies.year desc, movies.title asc";
-        PreparedStatement stmt = connection.prepareStatement(query);
+        PreparedStatement stmt = dataSource.getConnection().prepareStatement(query);
         stmt.setString(1,starId);
         List<Movie> movs=new ArrayList<>();
         ResultSet result = stmt.executeQuery();
@@ -112,7 +138,7 @@ public class DBService {
         }
         //ResultSet star=query("select * from stars where id = \""+starId+"\";");
         String query2="select * from stars where id = ?;";
-        PreparedStatement stmt2 = connection.prepareStatement(query2);
+        PreparedStatement stmt2 = dataSource.getConnection().prepareStatement(query2);
         stmt2.setString(1,starId);
         ResultSet star = stmt2.executeQuery();
         star.next();
@@ -224,7 +250,7 @@ public class DBService {
         }
 
 
-        PreparedStatement stmt=connection.prepareStatement(querystr);
+        PreparedStatement stmt=dataSource.getConnection().prepareStatement(querystr);
         System.out.println(querystr);
         for(int i=0;i<qparam.size();i++){
             stmt.setString(i+1,qparam.get(i));
@@ -244,7 +270,7 @@ public class DBService {
         querystr+=limitCondition;
 
 
-        stmt=connection.prepareStatement(querystr);
+        stmt=dataSource.getConnection().prepareStatement(querystr);
         for(int i=0;i<qparam.size();i++){
             stmt.setString(i+1,qparam.get(i));
         }
@@ -343,7 +369,7 @@ public class DBService {
         }
 
 
-        PreparedStatement stmt=connection.prepareStatement(querystr);
+        PreparedStatement stmt=dataSource.getConnection().prepareStatement(querystr);
         for(int i=0;i<qparam.size();i++){
             stmt.setString(i+1,qparam.get(i));
         }
@@ -362,7 +388,7 @@ public class DBService {
         querystr+=limitCondition;
 
 
-        stmt=connection.prepareStatement(querystr);
+        stmt=dataSource.getConnection().prepareStatement(querystr);
         for(int i=0;i<qparam.size();i++){
             stmt.setString(i+1,qparam.get(i));
         }
@@ -397,7 +423,7 @@ public class DBService {
             }else{
                 q="select * from stars where stars.id in (select starId from stars_in_movies where movieId= ? ) order by (select count(*) from stars_in_movies where stars_in_movies.starId = stars.id) desc , stars.name asc";
             }
-            PreparedStatement smt=connection.prepareStatement(q);
+            PreparedStatement smt=dataSource.getConnection().prepareStatement(q);
             smt.setString(1,mov.getId());
             ResultSet tmp = smt.executeQuery();
             ArrayList<Star> stars = new ArrayList<>();
@@ -406,10 +432,10 @@ public class DBService {
             }
             mov.setStars(stars);
             if(limit) {
-                smt=connection.prepareStatement("select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc limit 3;");
+                smt=dataSource.getConnection().prepareStatement("select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc limit 3;");
 
             }else{
-                smt=connection.prepareStatement("select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc;");
+                smt=dataSource.getConnection().prepareStatement("select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc;");
 
             }
             smt.setString(1,mov.getId());
@@ -423,7 +449,7 @@ public class DBService {
             }
             mov.setGenres(genres);
 
-            smt=connection.prepareStatement("select rating from ratings where movieId = ?;");
+            smt=dataSource.getConnection().prepareStatement("select rating from ratings where movieId = ?;");
             smt.setString(1,mov.getId());
             tmp=smt.executeQuery();
             if(tmp.next()) {
@@ -478,7 +504,7 @@ public class DBService {
         }
 
         String countSQL = "select count(*) from movies where movies.id in (select movieId from genres_in_movies where genres_in_movies.genreId in (select id from genres where genres.name = ? ))";
-        PreparedStatement stmt=connection.prepareStatement(countSQL);
+        PreparedStatement stmt=dataSource.getConnection().prepareStatement(countSQL);
         stmt.setString(1,genre);
         ResultSet q1=stmt.executeQuery();
         long items = 0;
@@ -489,7 +515,7 @@ public class DBService {
         String sql = "select * from movies where movies.id in (select movieId from genres_in_movies where genres_in_movies.genreId in (select id from genres where genres.name = ? ))"
                 + orderByCondition
                 + limitCondition;
-        stmt=connection.prepareStatement(sql);
+        stmt=dataSource.getConnection().prepareStatement(sql);
         stmt.setString(1,genre);
         stmt.setInt(2, pagesize);
         stmt.setInt(3, offset);
@@ -553,7 +579,7 @@ public class DBService {
            // System.out.println(alphabet);
         }
         String countSQL = "select count(*) from movies where movies.title REGEXP ?";
-        PreparedStatement stmt=connection.prepareStatement(countSQL);
+        PreparedStatement stmt=dataSource.getConnection().prepareStatement(countSQL);
         stmt.setString(1,alphabet);
 
         ResultSet q1=stmt.executeQuery();
@@ -567,7 +593,7 @@ public class DBService {
                 + orderByCondition
                 + limitCondition;
 
-        stmt=connection.prepareStatement(sql);
+        stmt=dataSource.getConnection().prepareStatement(sql);
         stmt.setString(1,alphabet);
         stmt.setInt(2,pagesize);
         stmt.setInt(3,offset);
@@ -587,7 +613,7 @@ public class DBService {
     //look for all genres sort alphabetical
     public ListGenResponse genlist() throws Exception {
         //ResultSet q=query("select * from genres order by ascii(lower(genres.name));");
-        PreparedStatement Stmt = connection.prepareStatement("select * from genres order by ascii(lower(genres.name));");
+        PreparedStatement Stmt = dataSource.getConnection().prepareStatement("select * from genres order by ascii(lower(genres.name));");
         ResultSet q = Stmt.executeQuery();
         ArrayList<String> genlist =new ArrayList<>();
         while(q.next()){
@@ -607,7 +633,7 @@ public class DBService {
         //String sql = "select * from creditcards where creditcards.id = \"" +number+"\" and  creditcards.firstname = \"" +firstname+"\" and creditcards.lastname = \"" +lastname+"\" and creditcards.expiration = \"" +expire+"\";";
         String sql = "select * from creditcards where creditcards.id = ? and  creditcards.firstname = ? and creditcards.lastname = ? and creditcards.expiration = ?;";
 
-        PreparedStatement stm = connection.prepareStatement(sql);
+        PreparedStatement stm = dataSource.getConnection().prepareStatement(sql);
         stm.setString(1,number);
         stm.setString(2, firstname);
         stm.setString(3, lastname);
@@ -627,7 +653,7 @@ public class DBService {
         ArrayList<CartItem> cartItems = cs.getCartItems();
         cr.setCartList(cartItems);
         String sql_add ="INSERT INTO sales (customerId, movieId, saleDate) VALUES ( ?, ?, ?)";
-        PreparedStatement stmt = connection.prepareStatement(sql_add,Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement stmt = dataSource.getConnection().prepareStatement(sql_add,Statement.RETURN_GENERATED_KEYS);
 
         Date date = Calendar.getInstance().getTime();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -671,7 +697,7 @@ public class DBService {
 
         //String sql = "select * from customers where customers.email = \""+ email +"\" and customers.password = \"" +pwd +"\";";
         String sql = "select * from customers where customers.email = ?;";
-        PreparedStatement stm = connection.prepareStatement(sql);
+        PreparedStatement stm = dataSource.getConnection().prepareStatement(sql);
         stm.setString(1, email);
         //stm.setString(2, pwd);
 
@@ -699,12 +725,14 @@ public class DBService {
 
     public BaseResponse adminLogin(String email, String password) throws SQLException {
 
+
         BaseResponse response = new BaseResponse(-1);
         System.out.println(email);
         System.out.println(password);
+        
         //String sql = "select * from customers where customers.email = \""+ email +"\" and customers.password = \"" +pwd +"\";";
         String sql = "select * from employees where employees.email = ?;";
-        PreparedStatement stm = connection.prepareStatement(sql);
+        PreparedStatement stm = dataSource.getConnection().prepareStatement(sql);
         stm.setString(1, email);
         //stm.setString(2, pwd);
 
@@ -736,7 +764,7 @@ public class DBService {
         ArrayList<Table> result=new ArrayList<>();
         DatabaseMetaData metaData = null;
         try {
-            metaData = connection.getMetaData();
+            metaData = dataSource.getConnection().getMetaData();
 
        String[] types = {"TABLE"};
         //Retrieving the columns in the database
@@ -757,7 +785,7 @@ public class DBService {
         ArrayList<Attr> result=new ArrayList<>();
         DatabaseMetaData metaData = null;
         try {
-            metaData = connection.getMetaData();
+            metaData = dataSource.getConnection().getMetaData();
 
             String[] types = {"TABLE"};
             //Retrieving the columns in the database
@@ -781,7 +809,7 @@ public class DBService {
 
     public BaseResponse addMovie(String title, String year, String director, String starName, String genre) throws SQLException {
         BaseResponse response = new BaseResponse(-1);
-        CallableStatement cs = connection.prepareCall("{CALL add_movie(?,?,?,?,?,?,?,?,?,?)}");
+        CallableStatement cs = dataSource.getConnection().prepareCall("{CALL add_movie(?,?,?,?,?,?,?,?,?,?)}");
 
         cs.setString(1, title);
         cs.setInt(2, Integer.parseInt(year));
@@ -815,7 +843,7 @@ public class DBService {
 
     public BaseResponse addStar(String name, String birth) throws SQLException {
         BaseResponse response = new BaseResponse(-1);
-        CallableStatement cs = connection.prepareCall("{CALL add_star(?,?,?,?,?)}");
+        CallableStatement cs = dataSource.getConnection().prepareCall("{CALL add_star(?,?,?,?,?)}");
 
         cs.setString(1, name);
         if (birth.equals("")) cs.setInt(2, 0);
@@ -854,7 +882,7 @@ public class DBService {
         String newTitle = sb.toString();
 
         String sql = "select id, title from movies WHERE MATCH (movies.title) AGAINST (? IN BOOLEAN MODE);";
-        PreparedStatement stm = connection.prepareStatement(sql);
+        PreparedStatement stm = dataSource.getConnection().prepareStatement(sql);
         stm.setString(1, newTitle);
         ResultSet q1 = stm.executeQuery();
         List<Movie> res = new ArrayList<>();
