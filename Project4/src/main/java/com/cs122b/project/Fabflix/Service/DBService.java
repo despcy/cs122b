@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.sql.*;
@@ -28,23 +29,13 @@ import java.util.List;
 public class DBService {
     private Connection connection;
 
-    private DataSource dataSource=primaryDataSource();
+    @Resource(name="readbean")
+    private DataSource dataSource;
 
-    private DataSource writedataSource=secondaryDataSource();
+    @Resource(name="writebean")
+    private DataSource writedataSource;
 
 
-    @Bean
-    @Primary
-    @ConfigurationProperties(prefix="spring.datasource")
-    public DataSource primaryDataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
-    @Bean
-    @ConfigurationProperties(prefix="spring.datasource2")
-    public DataSource secondaryDataSource() {
-        return DataSourceBuilder.create().build();
-    }
 
     public Movie getMovieByID(String movieID) throws Exception{
 
