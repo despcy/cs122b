@@ -6,9 +6,14 @@ import com.cs122b.project.Fabflix.session.CartSession;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.sql.*;
@@ -22,48 +27,15 @@ import java.util.List;
 @Service
 @Scope("singleton")
 public class DBService {
-    @Autowired
+    private Connection connection;
+
+    @Resource(name="readbean")
     private DataSource dataSource;
 
-    public DBService(@Value("${database.dbname}") String dbName,@Value("${database.username}") String userName,@Value("${database.password}") String password){
+    @Resource(name="writebean")
+    private DataSource writedataSource;
 
-        // Connect to the test database
-       // try {
-            // Incorporate mySQL driver
-//            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-//            connection = DriverManager.getConnection("jdbc:mysql:///" + dbName + "?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT",
-//                    userName, password);
 
-//            Context initCtx = new InitialContext();
-//
-//            Context envCtx = (Context) initCtx.lookup("java:comp/env");
-//            if (envCtx == null)
-//                System.out.println("envCtx is NULL");
-
-            // Look up our data source
-            //DataSource ds = (DataSource) envCtx.lookup("jdbc/moviedb");
-
-     //       DataSource ds = dataSource;
-
-            // the following commented lines are direct connections without pooling
-            //Class.forName("org.gjt.mm.mysql.Driver");
-            //Class.forName("com.mysql.jdbc.Driver").newInstance();
-            //Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
-//            System.out.println(dataSource);
-//            if (ds == null)
-//                System.out.println("ds is null.");
-//            connection = ds.getConnection();
-//
-//        }catch (Exception e){
-//            System.out.println(e.toString());
-//
-//        }
-//
-//        if (connection != null) {
-//            System.out.println("Connection established!!");
-//            System.out.println();
-//        }
-    }
 
     public Movie getMovieByID(String movieID) throws Exception{
 
@@ -652,7 +624,7 @@ public class DBService {
         ArrayList<CartItem> cartItems = cs.getCartItems();
         cr.setCartList(cartItems);
         String sql_add ="INSERT INTO sales (customerId, movieId, saleDate) VALUES ( ?, ?, ?)";
-        PreparedStatement stmt = dataSource.getConnection().prepareStatement(sql_add,Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement stmt = writedataSource.getConnection().prepareStatement(sql_add,Statement.RETURN_GENERATED_KEYS);
 
         Date date = Calendar.getInstance().getTime();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -808,7 +780,7 @@ public class DBService {
 
     public BaseResponse addMovie(String title, String year, String director, String starName, String genre) throws SQLException {
         BaseResponse response = new BaseResponse(-1);
-        CallableStatement cs = dataSource.getConnection().prepareCall("{CALL add_movie(?,?,?,?,?,?,?,?,?,?)}");
+        CallableStatement cs = writedataSource.getConnection().prepareCall("{CALL add_movie(?,?,?,?,?,?,?,?,?,?)}");
 
         cs.setString(1, title);
         cs.setInt(2, Integer.parseInt(year));
@@ -842,7 +814,7 @@ public class DBService {
 
     public BaseResponse addStar(String name, String birth) throws SQLException {
         BaseResponse response = new BaseResponse(-1);
-        CallableStatement cs = dataSource.getConnection().prepareCall("{CALL add_star(?,?,?,?,?)}");
+        CallableStatement cs = writedataSource.getConnection().prepareCall("{CALL add_star(?,?,?,?,?)}");
 
         cs.setString(1, name);
         if (birth.equals("")) cs.setInt(2, 0);
