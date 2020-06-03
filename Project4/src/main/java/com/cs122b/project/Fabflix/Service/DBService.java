@@ -22,7 +22,6 @@ import java.util.List;
 @Service
 @Scope("singleton")
 public class DBService {
-    private Connection connection;
     @Autowired
     private DataSource dataSource;
 
