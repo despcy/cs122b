@@ -19,3 +19,4 @@ deploydb.sh
 proj3starter.sql
 **/node_modules/
 **/dist/
+*.log

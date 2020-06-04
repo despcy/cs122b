@@ -5,12 +5,9 @@ import com.cs122b.project.Fabflix.model.*;
 import com.cs122b.project.Fabflix.session.CartSession;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -35,20 +32,29 @@ public class DBService {
     @Resource(name="writebean")
     private DataSource writedataSource;
 
+    @Autowired
+    private DBQueryExec dbQueryExec;
 
+    public ResultSet executeQuery(PreparedStatement stmt) throws Exception{
+        return dbQueryExec.executeQuery(stmt);
+
+    }
 
     public Movie getMovieByID(String movieID) throws Exception{
 
 
 
         String query="select * from movies where movies.id = ?";
-        PreparedStatement Stmt=dataSource.getConnection().prepareStatement(query);
+        Connection conn=dataSource.getConnection();
+        PreparedStatement Stmt=conn.prepareStatement(query);
         Stmt.setString(1,movieID);
 
         ArrayList<Movie> result=moviesFetch2(Stmt,false);
         if(result.size()>0){
             return result.get(0);
         }
+
+        conn.close();
         return new Movie();
     }
 
@@ -100,7 +106,8 @@ public class DBService {
 
     public Star getStarById(String starId) throws Exception{
         String query = "select * from movies where movies.id in (select movieId from stars_in_movies where starId = ?) order by movies.year desc, movies.title asc";
-        PreparedStatement stmt = dataSource.getConnection().prepareStatement(query);
+        Connection conn=dataSource.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setString(1,starId);
         List<Movie> movs=new ArrayList<>();
         ResultSet result = stmt.executeQuery();
@@ -109,12 +116,13 @@ public class DBService {
         }
         //ResultSet star=query("select * from stars where id = \""+starId+"\";");
         String query2="select * from stars where id = ?;";
-        PreparedStatement stmt2 = dataSource.getConnection().prepareStatement(query2);
+        PreparedStatement stmt2 = conn.prepareStatement(query2);
         stmt2.setString(1,starId);
         ResultSet star = stmt2.executeQuery();
         star.next();
         Star s=resultToStar(star);
         s.setMovies(movs);
+        conn.close();
         return s;
     }
 
@@ -221,13 +229,15 @@ public class DBService {
         }
 
 
-        PreparedStatement stmt=dataSource.getConnection().prepareStatement(querystr);
+        Connection conn=dataSource.getConnection();
+        PreparedStatement stmt=conn.prepareStatement(querystr);
         System.out.println(querystr);
         for(int i=0;i<qparam.size();i++){
             stmt.setString(i+1,qparam.get(i));
         }
 
-        ResultSet q1=stmt.executeQuery();
+
+        ResultSet q1=executeQuery(stmt);
         long items = 0;
         while (q1.next()) {
             items = q1.getLong(1);}
@@ -241,7 +251,7 @@ public class DBService {
         querystr+=limitCondition;
 
 
-        stmt=dataSource.getConnection().prepareStatement(querystr);
+        stmt=conn.prepareStatement(querystr);
         for(int i=0;i<qparam.size();i++){
             stmt.setString(i+1,qparam.get(i));
         }
@@ -257,8 +267,14 @@ public class DBService {
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);
+        conn.close();
         return sr;
     }
+
+
+
+
+
 
     public SearchResponse getSearchResult(String title, String year, String director, String starName, int page, int pagesize,
                                           String sort, String order) throws Exception {
@@ -339,8 +355,8 @@ public class DBService {
             querystr+=starCondition;
         }
 
-
-        PreparedStatement stmt=dataSource.getConnection().prepareStatement(querystr);
+        Connection conn=dataSource.getConnection();
+        PreparedStatement stmt=conn.prepareStatement(querystr);
         for(int i=0;i<qparam.size();i++){
             stmt.setString(i+1,qparam.get(i));
         }
@@ -359,7 +375,7 @@ public class DBService {
         querystr+=limitCondition;
 
 
-        stmt=dataSource.getConnection().prepareStatement(querystr);
+        stmt=conn.prepareStatement(querystr);
         for(int i=0;i<qparam.size();i++){
             stmt.setString(i+1,qparam.get(i));
         }
@@ -375,6 +391,7 @@ public class DBService {
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);
+        conn.close();
         return sr;
     }
 
@@ -385,7 +402,8 @@ public class DBService {
 
         ArrayList<Movie> movies =new ArrayList<>();
 
-        ResultSet mtmp=stat.executeQuery();
+        ResultSet mtmp=executeQuery(stat);
+        Connection conn=dataSource.getConnection();
         while(mtmp.next()) {
             Movie mov = resultToMovie(mtmp);
             String q;
@@ -394,23 +412,24 @@ public class DBService {
             }else{
                 q="select * from stars where stars.id in (select starId from stars_in_movies where movieId= ? ) order by (select count(*) from stars_in_movies where stars_in_movies.starId = stars.id) desc , stars.name asc";
             }
-            PreparedStatement smt=dataSource.getConnection().prepareStatement(q);
+
+            PreparedStatement smt=conn.prepareStatement(q);
             smt.setString(1,mov.getId());
-            ResultSet tmp = smt.executeQuery();
+            ResultSet tmp = executeQuery(smt);
             ArrayList<Star> stars = new ArrayList<>();
             while (tmp.next()) {
                 stars.add(resultToStar(tmp));
             }
             mov.setStars(stars);
             if(limit) {
-                smt=dataSource.getConnection().prepareStatement("select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc limit 3;");
+                smt=conn.prepareStatement("select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc limit 3;");
 
             }else{
-                smt=dataSource.getConnection().prepareStatement("select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc;");
+                smt=conn.prepareStatement("select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc;");
 
             }
             smt.setString(1,mov.getId());
-            tmp=smt.executeQuery();
+            tmp=executeQuery(smt);
             ArrayList<Genre> genres = new ArrayList<>();
             while (tmp.next()) {
                 Genre g = new Genre();
@@ -420,16 +439,18 @@ public class DBService {
             }
             mov.setGenres(genres);
 
-            smt=dataSource.getConnection().prepareStatement("select rating from ratings where movieId = ?;");
+            smt=conn.prepareStatement("select rating from ratings where movieId = ?;");
             smt.setString(1,mov.getId());
-            tmp=smt.executeQuery();
+            tmp=executeQuery(smt);
             if(tmp.next()) {
                 mov.setRating(tmp.getFloat("rating"));
             }else{
                 mov.setRating(0.0f);
             }
             movies.add(mov);
+
         }
+        conn.close();
         return movies;
     }
 
@@ -475,7 +496,8 @@ public class DBService {
         }
 
         String countSQL = "select count(*) from movies where movies.id in (select movieId from genres_in_movies where genres_in_movies.genreId in (select id from genres where genres.name = ? ))";
-        PreparedStatement stmt=dataSource.getConnection().prepareStatement(countSQL);
+        Connection conn=dataSource.getConnection();
+        PreparedStatement stmt=conn.prepareStatement(countSQL);
         stmt.setString(1,genre);
         ResultSet q1=stmt.executeQuery();
         long items = 0;
@@ -486,7 +508,7 @@ public class DBService {
         String sql = "select * from movies where movies.id in (select movieId from genres_in_movies where genres_in_movies.genreId in (select id from genres where genres.name = ? ))"
                 + orderByCondition
                 + limitCondition;
-        stmt=dataSource.getConnection().prepareStatement(sql);
+        stmt=conn.prepareStatement(sql);
         stmt.setString(1,genre);
         stmt.setInt(2, pagesize);
         stmt.setInt(3, offset);
@@ -500,6 +522,7 @@ public class DBService {
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);
+        conn.close();
         return sr;
     }
 
@@ -550,7 +573,8 @@ public class DBService {
            // System.out.println(alphabet);
         }
         String countSQL = "select count(*) from movies where movies.title REGEXP ?";
-        PreparedStatement stmt=dataSource.getConnection().prepareStatement(countSQL);
+        Connection conn=dataSource.getConnection();
+        PreparedStatement stmt=conn.prepareStatement(countSQL);
         stmt.setString(1,alphabet);
 
         ResultSet q1=stmt.executeQuery();
@@ -564,7 +588,7 @@ public class DBService {
                 + orderByCondition
                 + limitCondition;
 
-        stmt=dataSource.getConnection().prepareStatement(sql);
+        stmt=conn.prepareStatement(sql);
         stmt.setString(1,alphabet);
         stmt.setInt(2,pagesize);
         stmt.setInt(3,offset);
@@ -578,13 +602,15 @@ public class DBService {
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);
+        conn.close();
         return sr;
     }
 
     //look for all genres sort alphabetical
     public ListGenResponse genlist() throws Exception {
         //ResultSet q=query("select * from genres order by ascii(lower(genres.name));");
-        PreparedStatement Stmt = dataSource.getConnection().prepareStatement("select * from genres order by ascii(lower(genres.name));");
+        Connection conn=dataSource.getConnection();
+        PreparedStatement Stmt = conn.prepareStatement("select * from genres order by ascii(lower(genres.name));");
         ResultSet q = Stmt.executeQuery();
         ArrayList<String> genlist =new ArrayList<>();
         while(q.next()){
@@ -594,6 +620,7 @@ public class DBService {
         ListGenResponse res = new ListGenResponse();
         res.setMessage(0);
         res.setData(genlist);
+        conn.close();
         return res;
     }
 
@@ -604,7 +631,8 @@ public class DBService {
         //String sql = "select * from creditcards where creditcards.id = \"" +number+"\" and  creditcards.firstname = \"" +firstname+"\" and creditcards.lastname = \"" +lastname+"\" and creditcards.expiration = \"" +expire+"\";";
         String sql = "select * from creditcards where creditcards.id = ? and  creditcards.firstname = ? and creditcards.lastname = ? and creditcards.expiration = ?;";
 
-        PreparedStatement stm = dataSource.getConnection().prepareStatement(sql);
+        Connection conn=dataSource.getConnection();
+        PreparedStatement stm = conn.prepareStatement(sql);
         stm.setString(1,number);
         stm.setString(2, firstname);
         stm.setString(3, lastname);
@@ -624,7 +652,8 @@ public class DBService {
         ArrayList<CartItem> cartItems = cs.getCartItems();
         cr.setCartList(cartItems);
         String sql_add ="INSERT INTO sales (customerId, movieId, saleDate) VALUES ( ?, ?, ?)";
-        PreparedStatement stmt = writedataSource.getConnection().prepareStatement(sql_add,Statement.RETURN_GENERATED_KEYS);
+        Connection connw=writedataSource.getConnection();
+        PreparedStatement stmt = connw.prepareStatement(sql_add,Statement.RETURN_GENERATED_KEYS);
 
         Date date = Calendar.getInstance().getTime();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -657,6 +686,8 @@ public class DBService {
             }
             item.setSid(sid);
             sid=new ArrayList<>();
+            conn.close();
+            connw.close();
         }
 
         cs.removeAllItemsFromCart();
@@ -668,13 +699,15 @@ public class DBService {
 
         //String sql = "select * from customers where customers.email = \""+ email +"\" and customers.password = \"" +pwd +"\";";
         String sql = "select * from customers where customers.email = ?;";
-        PreparedStatement stm = dataSource.getConnection().prepareStatement(sql);
+        Connection conn=dataSource.getConnection();
+        PreparedStatement stm = conn.prepareStatement(sql);
         stm.setString(1, email);
         //stm.setString(2, pwd);
 
         ResultSet q1 = stm.executeQuery();
         System.out.println(sql);
         boolean success = false;
+
 
         if (q1.next()) {
             // get the encrypted password from the database
@@ -691,6 +724,7 @@ public class DBService {
 
         }else
             response.setMessage(-1);
+        conn.close();
         return response;
     }
 
@@ -703,7 +737,8 @@ public class DBService {
         
         //String sql = "select * from customers where customers.email = \""+ email +"\" and customers.password = \"" +pwd +"\";";
         String sql = "select * from employees where employees.email = ?;";
-        PreparedStatement stm = dataSource.getConnection().prepareStatement(sql);
+        Connection conn=dataSource.getConnection();
+        PreparedStatement stm = conn.prepareStatement(sql);
         stm.setString(1, email);
         //stm.setString(2, pwd);
 
@@ -727,6 +762,7 @@ public class DBService {
 
 
         response.setData(adminName);
+        conn.close();
         return response;
     }
 
@@ -734,8 +770,10 @@ public class DBService {
     public ArrayList<Table> listTables(){
         ArrayList<Table> result=new ArrayList<>();
         DatabaseMetaData metaData = null;
+
         try {
-            metaData = dataSource.getConnection().getMetaData();
+            Connection conn=dataSource.getConnection();
+            metaData = conn.getMetaData();
 
        String[] types = {"TABLE"};
         //Retrieving the columns in the database
@@ -746,17 +784,19 @@ public class DBService {
            //  System.out.println(tb.getName());
              result.add(tb);
         }
-
+            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return result;
     }
     public ArrayList<Attr> listAttr(String tablename){
         ArrayList<Attr> result=new ArrayList<>();
         DatabaseMetaData metaData = null;
         try {
-            metaData = dataSource.getConnection().getMetaData();
+            Connection conn=dataSource.getConnection();
+            metaData = conn.getMetaData();
 
             String[] types = {"TABLE"};
             //Retrieving the columns in the database
@@ -771,6 +811,7 @@ public class DBService {
                 result.add(at);
             }
 
+            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -780,7 +821,8 @@ public class DBService {
 
     public BaseResponse addMovie(String title, String year, String director, String starName, String genre) throws SQLException {
         BaseResponse response = new BaseResponse(-1);
-        CallableStatement cs = writedataSource.getConnection().prepareCall("{CALL add_movie(?,?,?,?,?,?,?,?,?,?)}");
+        Connection conn=writedataSource.getConnection();
+        CallableStatement cs = conn.prepareCall("{CALL add_movie(?,?,?,?,?,?,?,?,?,?)}");
 
         cs.setString(1, title);
         cs.setInt(2, Integer.parseInt(year));
@@ -809,12 +851,14 @@ public class DBService {
             response.setData(output);
         }
 
+        conn.close();
         return response;
     }
 
     public BaseResponse addStar(String name, String birth) throws SQLException {
         BaseResponse response = new BaseResponse(-1);
-        CallableStatement cs = writedataSource.getConnection().prepareCall("{CALL add_star(?,?,?,?,?)}");
+        Connection conn=writedataSource.getConnection();
+        CallableStatement cs = conn.prepareCall("{CALL add_star(?,?,?,?,?)}");
 
         cs.setString(1, name);
         if (birth.equals("")) cs.setInt(2, 0);
@@ -833,6 +877,7 @@ public class DBService {
             response.setMessage(0);
             response.setData(output);
         }
+        conn.close();
         return response;
     }
 
@@ -853,7 +898,8 @@ public class DBService {
         String newTitle = sb.toString();
 
         String sql = "select id, title from movies WHERE MATCH (movies.title) AGAINST (? IN BOOLEAN MODE);";
-        PreparedStatement stm = dataSource.getConnection().prepareStatement(sql);
+        Connection conn=dataSource.getConnection();
+        PreparedStatement stm = conn.prepareStatement(sql);
         stm.setString(1, newTitle);
         ResultSet q1 = stm.executeQuery();
         List<Movie> res = new ArrayList<>();
@@ -868,6 +914,7 @@ public class DBService {
         }
         response.setMessage(0);
         response.setData(res);
+        conn.close();
         return response;
     }
 }

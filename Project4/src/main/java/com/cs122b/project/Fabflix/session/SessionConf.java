@@ -41,11 +41,12 @@ public class SessionConf implements WebMvcConfigurer {
             HttpSession session = request.getSession();
 
             //return message -1
-             if(session.getAttribute(session.getId()) == null){
-
-                 response.getWriter().write("{\"message\":-1,\"data\":\"Login First!\"}");
-                 return false;
-             }
+            //TODO:uncomment
+//             if(session.getAttribute(session.getId()) == null){
+//
+//                 response.getWriter().write("{\"message\":-1,\"data\":\"Login First!\"}");
+//                 return false;
+//             }
              return true;
         }
     }
