@@ -7,7 +7,7 @@ cs122b-spring20-team-60 created by GitHub Classroom
     
     - #### Names: Jingwen Mo, Chenxi Yang
     
-    - #### Project 5 Video Demo Link: https://youtu.be/a8fFD48-Cho
+    - #### Project 5 Video Demo Link: https://youtu.be/7hC22V40CEw
 
     - #### Instruction of deployment: cd Project5 && sudo sh ./deploy.sh
 
@@ -32,6 +32,7 @@ cs122b-spring20-team-60 created by GitHub Classroom
     Firstly, we configure the connection pooling in spring boot by do the configuration in application.properties, then spring will create a bean for us, and we can inject this DataSource bean and use it to get connection with MySQL.
     
     - #### Explain how Connection Pooling works with two backend SQL.
+    There are two datasources(Thread pool) in our project, the datasource is binded and connect to the local slave SQL, only for reading data, the writedatasource is connected to the master SQL, and is used to perform write operation. The dbservice request connection from datasources and close that connection after work is done. For the search dbservice, Spring AOP is used for performance monitoring.
     
 
 - # Master/Slave
@@ -54,16 +55,16 @@ cs122b-spring20-team-60 created by GitHub Classroom
 
 | **Single-instance Version Test Plan**          | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
 |------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
-| Case 1: HTTP/1 thread                          | ![](./art/single-http-pool-1.png)   | 119                         | ??                                  | ??                        | ??           |
-| Case 2: HTTP/10 threads                        | ![](./art/single-http-pool-10.png)   | 479                         | ??                                  | ??                        | ??           |
-| Case 3: HTTPS/10 threads                       | ![](./art/single-https-pool-10.png)   | 343                         | ??                                  | ??                        | ??           |
-| Case 4: HTTP/10 threads/No connection pooling  | ![](./art/single-http-nopool-10.png)   | 492                         | ??                                  | ??                        | ??           |
+| Case 1: HTTP/1 thread                          | ![](./art/single-http-pool-1.png)   | 119                         | 2.934646327857861                                  | 2.7373635035199464                        | ??           |
+| Case 2: HTTP/10 threads                        | ![](./art/single-http-pool-10.png)   | 479                         | 19.105124038733923                                  | 48.15678911793612                        | ??           |
+| Case 3: HTTPS/10 threads                       | ![](./art/single-https-pool-10.png)   | 343                         | 39.919192418633656                                  | 115.3764386095759                        | ??           |
+| Case 4: HTTP/10 threads/No connection pooling  | ![](./art/single-http-nopool-10.png)   | 492                         | 77.68907252533053                                  | 49.86028800994501                        | ??           |
 
 | **Scaled Version Test Plan**                   | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
 |------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
-| Case 1: HTTP/1 thread                          | ![](./art/scaled-http-pool-1.png)   | 117                         | ??                                  | ??                        | ??           |
-| Case 2: HTTP/10 threads                        | ![](./art/scaled-http-pool-10.png)   | 273                         | ??                                  | ??                        | ??           |
-| Case 3: HTTP/10 threads/No connection pooling  | ![](./art/scaled-http-nopool-10.png)   | 175                         | ??                                  | ??                        | ??           |
+| Case 1: HTTP/1 thread                          | ![](./art/scaled-http-pool-1.png)   | 117                         | master:3.531809883097542, slave:3.7946399822747416                                  | master:3.187468437825763, slave:3.468511991875923                        | ??           |
+| Case 2: HTTP/10 threads                        | ![](./art/scaled-http-pool-10.png)   | 273                         | master: 5.0240276454654555, slave:4.204780390688259                                  | master:4.860670053831647, slave:4.11700182388664                        | ??           |
+| Case 3: HTTP/10 threads/No connection pooling  | ![](./art/scaled-http-nopool-10.png)   | 175                         | master:49.95578317359235, slave:10.402232293506493                                  | master:41.909705471535425, slave:9.289837856623377                        | ??           |
 
 
 
