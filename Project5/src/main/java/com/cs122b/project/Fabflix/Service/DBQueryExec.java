@@ -38,18 +38,21 @@ public class DBQueryExec {
 
 
     public ResultSet executeQuery(PreparedStatement stmt) throws Exception{
+
         return stmt.executeQuery();
 
     }
 
     //Connection conn=dataSource.getConnection();
     public Connection getConnection(DataSource datasource) throws Exception{
-        if(connection!=null)return connection;
+
 
         return datasource.getConnection();
     }
     //PreparedStatement stmt=conn.prepareStatement(querystr) ;
     public PreparedStatement prepareStatement(Connection conn,String query) throws Exception{
+
+        if(connection!=null)return connection.prepareStatement(query);
         return conn.prepareStatement(query);
     }
 
