@@ -1,6 +1,7 @@
 # cs122b-spring20-team-60
 cs122b-spring20-team-60 created by GitHub Classroom
 
+### Note: We put the original Fabflix (8080 port) and the load balancer (80 port) on the same AWS instance. So We have 3 AWS instance and 1 GCP.
 - # General
     - #### Team#: 60
     
