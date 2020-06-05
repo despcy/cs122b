@@ -6,7 +6,7 @@ rm ~/tomcat/webapps/ROOT.war
 
 rm -rf ~/tomcat/webapps/ROOT
 
-./mvnw clean install
+mvn install
 
 mv target/Fabflix-0.0.1-SNAPSHOT.war ~/tomcat/webapps/ROOT.war
 
