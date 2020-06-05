@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 @RestController
@@ -58,7 +59,6 @@ public class MovieController {
                                       HttpSession session) throws Exception {
 
         BaseResponse response = movieService.login(email,password);
-        System.out.println("aaaaa");
         System.out.println(email+" "+password);
         if (response.getMessage() == 0){
             session.setAttribute(session.getId(),response);
@@ -88,7 +88,7 @@ public class MovieController {
     public SearchResponse Search(@RequestParam("title") String title, @RequestParam("year") String year,
                                  @RequestParam("director") String director, @RequestParam("star") String starName,
                                  @RequestParam("page") int page, @RequestParam("pagesize") int pagesize,
-                                 @RequestParam("sort") String sort, @RequestParam("order") String order) {
+                                 @RequestParam("sort") String sort, @RequestParam("order") String order,@RequestHeader Map<String, String> headers) {
         return movieService.search(title, year, director, starName, page, pagesize, sort, order);
     }
 
