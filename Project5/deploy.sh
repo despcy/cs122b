@@ -6,7 +6,7 @@ rm -rf /home/ubuntu/performanceLog
 
 mkdir /home/ubuntu/performanceLog
 
-chmod 666 /home/ubuntu/performanceLog
+chmod 777 /home/ubuntu/performanceLog
 
 rm ~/tomcat/webapps/ROOT.war
 
