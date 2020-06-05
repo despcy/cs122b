@@ -2,6 +2,12 @@
 
 sh ~/tomcat/bin/catalina.sh stop
 
+rm -rf /home/ubuntu/performanceLog
+
+mkdir /home/ubuntu/performanceLog
+
+chmod -r 666 /home/ubuntu/performanceLog
+
 rm ~/tomcat/webapps/ROOT.war
 
 rm -rf ~/tomcat/webapps/ROOT
