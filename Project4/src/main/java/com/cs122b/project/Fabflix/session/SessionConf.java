@@ -17,6 +17,7 @@ public class SessionConf implements WebMvcConfigurer {
         registry.addInterceptor(new SecurityInterceptor())
                 //排除拦截
                 .excludePathPatterns("/api/login")
+                .excludePathPatterns("/api/search")//for test purpose
                 .excludePathPatterns("/api/android_login")
                 .excludePathPatterns("/api/dash/login")
                 .excludePathPatterns("/api/logout")
@@ -41,7 +42,7 @@ public class SessionConf implements WebMvcConfigurer {
             HttpSession session = request.getSession();
 
             //return message -1
-     
+
              if(session.getAttribute(session.getId()) == null){
 
                  response.getWriter().write("{\"message\":-1,\"data\":\"Login First!\"}");

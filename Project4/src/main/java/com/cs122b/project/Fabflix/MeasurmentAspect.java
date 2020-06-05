@@ -80,7 +80,7 @@ public class MeasurmentAspect {
         TS=0l;
         TJ=0l;
     }
-    @Around("execution(* com.cs122b.project.Fabflix.Service.DBQueryExec.executeQuery(..))")
+    @Around("execution(* com.cs122b.project.Fabflix.Service.DBQueryExec.*(..))")
     public Object measureJDBCExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
 
         long start = System.nanoTime();

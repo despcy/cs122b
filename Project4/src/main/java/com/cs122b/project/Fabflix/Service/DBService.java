@@ -24,7 +24,7 @@ import java.util.List;
 @Service
 @Scope("singleton")
 public class DBService {
-    private Connection connection;
+
 
     @Resource(name="readbean")
     private DataSource dataSource;
@@ -229,8 +229,8 @@ public class DBService {
         }
 
 
-        Connection conn=dataSource.getConnection();
-        PreparedStatement stmt=conn.prepareStatement(querystr);
+        Connection conn=dbQueryExec.getConnection(dataSource);
+        PreparedStatement stmt=dbQueryExec.prepareStatement(conn,querystr);
         System.out.println(querystr);
         for(int i=0;i<qparam.size();i++){
             stmt.setString(i+1,qparam.get(i));
@@ -251,7 +251,7 @@ public class DBService {
         querystr+=limitCondition;
 
 
-        stmt=conn.prepareStatement(querystr);
+        stmt=dbQueryExec.prepareStatement(conn,querystr);
         for(int i=0;i<qparam.size();i++){
             stmt.setString(i+1,qparam.get(i));
         }
@@ -403,7 +403,7 @@ public class DBService {
         ArrayList<Movie> movies =new ArrayList<>();
 
         ResultSet mtmp=executeQuery(stat);
-        Connection conn=dataSource.getConnection();
+        Connection conn=dbQueryExec.getConnection(dataSource);
         while(mtmp.next()) {
             Movie mov = resultToMovie(mtmp);
             String q;
@@ -413,7 +413,7 @@ public class DBService {
                 q="select * from stars where stars.id in (select starId from stars_in_movies where movieId= ? ) order by (select count(*) from stars_in_movies where stars_in_movies.starId = stars.id) desc , stars.name asc";
             }
 
-            PreparedStatement smt=conn.prepareStatement(q);
+            PreparedStatement smt=dbQueryExec.prepareStatement(conn,q);
             smt.setString(1,mov.getId());
             ResultSet tmp = executeQuery(smt);
             ArrayList<Star> stars = new ArrayList<>();
@@ -422,10 +422,10 @@ public class DBService {
             }
             mov.setStars(stars);
             if(limit) {
-                smt=conn.prepareStatement("select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc limit 3;");
+                smt=dbQueryExec.prepareStatement(conn,"select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc limit 3;");
 
             }else{
-                smt=conn.prepareStatement("select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc;");
+                smt=dbQueryExec.prepareStatement(conn,"select * from genres where genres.id in (select genreId from genres_in_movies where movieId= ? ) order by name asc;");
 
             }
             smt.setString(1,mov.getId());
@@ -439,7 +439,7 @@ public class DBService {
             }
             mov.setGenres(genres);
 
-            smt=conn.prepareStatement("select rating from ratings where movieId = ?;");
+            smt=dbQueryExec.prepareStatement(conn,"select rating from ratings where movieId = ?;");
             smt.setString(1,mov.getId());
             tmp=executeQuery(smt);
             if(tmp.next()) {
