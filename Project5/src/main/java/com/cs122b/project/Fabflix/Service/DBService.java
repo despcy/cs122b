@@ -54,7 +54,8 @@ public class DBService {
             return result.get(0);
         }
 
-        conn.close();
+        
+        dbQueryExec.closeConn(conn);;
         return new Movie();
     }
 
@@ -122,7 +123,7 @@ public class DBService {
         star.next();
         Star s=resultToStar(star);
         s.setMovies(movs);
-        conn.close();
+        dbQueryExec.closeConn(conn);;
         return s;
     }
 
@@ -267,7 +268,7 @@ public class DBService {
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);
-        conn.close();
+        dbQueryExec.closeConn(conn);;
         return sr;
     }
 
@@ -391,7 +392,7 @@ public class DBService {
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);
-        conn.close();
+        dbQueryExec.closeConn(conn);;
         return sr;
     }
 
@@ -450,7 +451,7 @@ public class DBService {
             movies.add(mov);
 
         }
-        conn.close();
+        dbQueryExec.closeConn(conn);;
         return movies;
     }
 
@@ -522,7 +523,7 @@ public class DBService {
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);
-        conn.close();
+        dbQueryExec.closeConn(conn);;
         return sr;
     }
 
@@ -602,7 +603,7 @@ public class DBService {
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);
-        conn.close();
+        dbQueryExec.closeConn(conn);;
         return sr;
     }
 
@@ -620,7 +621,7 @@ public class DBService {
         ListGenResponse res = new ListGenResponse();
         res.setMessage(0);
         res.setData(genlist);
-        conn.close();
+        dbQueryExec.closeConn(conn);;
         return res;
     }
 
@@ -686,8 +687,8 @@ public class DBService {
             }
             item.setSid(sid);
             sid=new ArrayList<>();
-            conn.close();
-            connw.close();
+            dbQueryExec.closeConn(conn);;
+            dbQueryExec.closeConn(connw);;
         }
 
         cs.removeAllItemsFromCart();
@@ -724,7 +725,7 @@ public class DBService {
 
         }else
             response.setMessage(-1);
-        conn.close();
+        dbQueryExec.closeConn(conn);;
         return response;
     }
 
@@ -762,7 +763,7 @@ public class DBService {
 
 
         response.setData(adminName);
-        conn.close();
+        dbQueryExec.closeConn(conn);;
         return response;
     }
 
@@ -784,7 +785,7 @@ public class DBService {
            //  System.out.println(tb.getName());
              result.add(tb);
         }
-            conn.close();
+            dbQueryExec.closeConn(conn);;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -811,7 +812,7 @@ public class DBService {
                 result.add(at);
             }
 
-            conn.close();
+            dbQueryExec.closeConn(conn);;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -851,7 +852,7 @@ public class DBService {
             response.setData(output);
         }
 
-        conn.close();
+        dbQueryExec.closeConn(conn);;
         return response;
     }
 
@@ -877,7 +878,7 @@ public class DBService {
             response.setMessage(0);
             response.setData(output);
         }
-        conn.close();
+        dbQueryExec.closeConn(conn);;
         return response;
     }
 
@@ -914,7 +915,7 @@ public class DBService {
         }
         response.setMessage(0);
         response.setData(res);
-        conn.close();
+        dbQueryExec.closeConn(conn);;
         return response;
     }
 }

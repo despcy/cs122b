@@ -45,6 +45,7 @@ public class DBQueryExec {
 
     //Connection conn=dataSource.getConnection();
     public Connection getConnection(DataSource datasource) throws Exception{
+        if(connection!=null)return null;
 
 
         return datasource.getConnection();
@@ -54,6 +55,16 @@ public class DBQueryExec {
 
         if(connection!=null)return connection.prepareStatement(query);
         return conn.prepareStatement(query);
+    }
+
+    public void closeConn(Connection connection){
+        if(connection==null)return;
+        try {
+            connection.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
 }
