@@ -6,5 +6,5 @@ pip install jsonlines
 
 ## parse:
 ```
-python3 parse.py test01.log
+python3 log_processing.py test01.log
 ```
