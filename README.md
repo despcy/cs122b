@@ -7,29 +7,47 @@ cs122b-spring20-team-60 created by GitHub Classroom
     
     - #### Names: Jingwen Mo, Chenxi Yang
     
-    - #### Project 5 Video Demo Link:
+    - #### Project 5 Video Demo Link: https://youtu.be/a8fFD48-Cho
 
-    - #### Instruction of deployment:
+    - #### Instruction of deployment: cd Project5 && sudo sh ./deploy.sh
 
-    - #### Collaborations and Work Distribution:
-
+    - #### Collaborations and Work Distribution:  
+    Chenxi Yang:
+    1. task 3 -- Enabled load balancer and routing queries to Master/Slave SQL respectively
+    2. task 4 -- Prepared the codebase for measurement and wrote the processing script; Solved the login issue in testing and preparing the test plan in JMeter
+    
+    Jingwen Mo:
+    1. task 1 -- Connection pooling in Spring boot
+    2. task 2 -- Master-Slave Replication
+    3. task 3 -- Enabled load balancer in aws and gcp
+    4. task 4 -- tested and measured the performance, and collected the results
+    
 
 - # Connection Pooling
-    - #### Include the filename/path of all code/configuration files in GitHub of using JDBC Connection Pooling.
+    - #### filename/path of all code/configuration files in GitHub of using JDBC Connection Pooling.
+    Project5/src/main/resources/application.properties
+    Project5/src/main/java/com/cs122b/project/Fabflix/Service/DBService.java
     
-    - #### Explain how Connection Pooling is utilized in the Fabflix code.
+    - #### Explain how Connection Pooling is utilized in the Fabflix code.  
+    Firstly, we configure the connection pooling in spring boot by do the configuration in application.properties, then spring will create a bean for us, and we can inject this DataSource bean and use it to get connection with MySQL.
     
     - #### Explain how Connection Pooling works with two backend SQL.
     
 
 - # Master/Slave
-    - #### Include the filename/path of all code/configuration files in GitHub of routing queries to Master/Slave SQL.
+    - #### Include the filename/path of all code/configuration files in GitHub of routing queries to Master/Slave SQL.  
+    Project5/src/main/resources/application.properties
+    Project5/src/main/java/com/cs122b/project/Fabflix/Service/DBService.java
 
     - #### How read/write requests were routed to Master/Slave SQL?
-    
+    We configured two datasources in [application.properties](./Project5/src/main/resources/application.properties), one for read, one for write, and we connect the write datasoure with the master slave. When we have to insert or update the database we use the read datasource.
 
 - # JMeter TS/TJ Time Logs
     - #### Instructions of how to use the `log_processing.*` script to process the JMeter logs.
+    ```
+    pip install jsonlines
+    python3 log_processing.py test01.log
+    ```
 
 
 - # JMeter TS/TJ Time Measurement Report
