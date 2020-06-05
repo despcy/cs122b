@@ -17,7 +17,7 @@ public class DBQueryExec {
     private Connection connection;
     public DBQueryExec(@Value("${searchthreadPoolEnabled}") Boolean enabled,@Value("${database.dbname}") String dbName,@Value("${database.username}") String userName,@Value("${database.password}") String password){
 
-        if(enabled==false)return;
+        if(enabled==true)return;
         // Connect to the test database
         try {
             // Incorporate mySQL driver
