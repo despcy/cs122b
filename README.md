@@ -7,12 +7,14 @@ cs122b-spring20-team-60 created by GitHub Classroom
     
     - #### Names: Jingwen Mo, Chenxi Yang
     
-    - #### URL: scaled: http://18.220.12.68:80  
-    original website: https://18.220.12.68:8443
+    - #### URL: 
+        scaled: http://18.220.12.68:80  
+        original website: https://18.220.12.68:8443
     
-    - #### Project 5 Video Demo Link: https://youtu.be/7hC22V40CEw
+    - #### Project 5 Video Demo Link: https://youtu.be/lGPPOcAW6O0
 
-    - #### Instruction of deployment:   cd Project5 && sudo sh ./deploy.sh
+    - #### Instruction of deployment:   
+    cd Project5 && sudo sh ./deploy.sh
 
     - #### Collaborations and Work Distribution:  
     Chenxi Yang:
@@ -58,16 +60,16 @@ cs122b-spring20-team-60 created by GitHub Classroom
 
 | **Single-instance Version Test Plan**          | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
 |------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
-| Case 1: HTTP/1 thread                          | ![](./art/single-http-pool-1.png)   | 119                         | 2.934646327857861                                  | 2.7373635035199464                        | ??           |
-| Case 2: HTTP/10 threads                        | ![](./art/single-http-pool-10.png)   | 189                         | 13.760883089491918                                 | 13.730279687259431                        | ??           |
-| Case 3: HTTPS/10 threads                       | ![](./art/single-https-pool-10.png)   | 175                         | 17.3745397431918                                 | 17.31245554104441                       | ??           |
-| Case 4: HTTP/10 threads/No connection pooling  | ![](./art/single-http-nopool-10.png)   | 492                         | 77.68907252533053                                  | 49.86028800994501                        | ??           |
+| Case 1: HTTP/1 thread                          | ![](./art/single-http-pool-1.png)   | 119                         | 2.934646327857861                                  | 2.7373635035199464                        | The average query time JMeter calculated is 119, which is the whole time spent from sending the request to receiving the response. TS is aroud 2.93 while JS is aroud 2.73, we can see that TS>TJ, which satisfied our expectation that TJ is part of TS. Time diffence between AQT and TS is the time spent in the network transmit, which is much larger than TS.           |
+| Case 2: HTTP/10 threads                        | ![](./art/single-http-pool-10.png)   | 189                         | 13.760883089491918                                 | 13.730279687259431                        | We can see that 10 thread is slower than 1 thread since the load for the server is heavier and TS>TJ, which satisfied our expectation            |
+| Case 3: HTTPS/10 threads                       | ![](./art/single-https-pool-10.png)   | 175                         | 17.3745397431918                                 | 17.31245554104441                       | We can see that https is slower than http and TS>TJ, which satisfied our expectation            |
+| Case 4: HTTP/10 threads/No connection pooling  | ![](./art/single-http-nopool-10.png)   | 492                         | 77.68907252533053                                  | 49.86028800994501                        | We can see that no connection pooling is slower than using connection pooling and TS>TJ, which satisfied our expectation            |
 
 | **Scaled Version Test Plan**                   | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
 |------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
-| Case 1: HTTP/1 thread                          | ![](./art/scaled-http-pool-1.png)   | 117                         | master:3.531809883097542, slave:3.7946399822747416                                  | master:3.187468437825763, slave:3.468511991875923                        | ??           |
-| Case 2: HTTP/10 threads                        | ![](./art/scaled-http-pool-10.png)   | 273                         | master: 5.0240276454654555, slave:4.204780390688259                                  | master:4.860670053831647, slave:4.11700182388664                        | ??           |
-| Case 3: HTTP/10 threads/No connection pooling  | ![](./art/scaled-http-nopool-10.png)   | 175                         | master:49.95578317359235, slave:10.402232293506493                                  | master:41.909705471535425, slave:9.289837856623377                        | ??           |
+| Case 1: HTTP/1 thread                          | ![](./art/scaled-http-pool-1.png)   | 117                         | master:3.531809883097542, slave:3.7946399822747416                                  | master:3.187468437825763, slave:3.468511991875923                        | We can see that the previous single version is slower than this scaled version since we have two servers to splite the incoming request flow and TS>TJ which satisfied our expectation            |
+| Case 2: HTTP/10 threads                        | ![](./art/scaled-http-pool-10.png)   | 273                         | master: 5.0240276454654555, slave:4.204780390688259                                  | master:4.860670053831647, slave:4.11700182388664                        | We can see that the previous single version is slower than this scaled version  and TS>TJ which satisfied our expectation; Also 10 thread is slower than 1 thread since the load for the server is heavier           |
+| Case 3: HTTP/10 threads/No connection pooling  | ![](./art/scaled-http-nopool-10.png)   | 175                         | master:49.95578317359235, slave:10.402232293506493                                  | master:41.909705471535425, slave:9.289837856623377                        | We can see that the previous single version is slower than this scaled version and no connection pooling is slower than using connection pooling and TS>TJ, which satisfied our expectation           |
 
 
 
