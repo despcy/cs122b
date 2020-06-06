@@ -2,15 +2,26 @@ package com.cs122b.project.Fabflix.Service;
 
 import com.cs122b.project.Fabflix.Response.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Map;
 
 @Service
 public class MovieService {
+
+    BufferedWriter filewriter=null;
+    String curfile="";
     @Autowired
     private DBService dbService;
+
+    @Value("${performancePath}")
+    private String logpath;
 
     public BaseResponse login(String email, String psw) throws Exception {
         BaseResponse response = new BaseResponse(-1);
@@ -63,13 +74,58 @@ public class MovieService {
 
 
     public SearchResponse search(String title, String year, String director, String starName, int page, int pagesize,
-                                 String sort, String order) {
-        SearchResponse sr = new SearchResponse();
+                                 String sort, String order, Map<String, String> headers) {
+        //start timing
+        Long TS=new Long(0l);
+        Long TJ=new Long(0l);
+
+
+
+
         try {
-            sr=dbService.getSearchResult2(title, year, director, starName, page, pagesize, sort, order);
+
+            if(!headers.containsKey("logfile")){
+                headers.put("logfile","other");
+
+            }
+        if(!curfile.equals(headers.get("logfile"))) {
+            curfile=headers.get("logfile");
+            String file=logpath+curfile+".log";
+            filewriter = new BufferedWriter(new FileWriter(file));
+
+
+
+        }
+
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        SearchResponse sr = new SearchResponse();
+
+        try {
+            long start = System.nanoTime();
+            Long[] tmp=new Long[1];
+            tmp[0]=TJ;
+            sr=dbService.getSearchResult2(title, year, director, starName, page, pagesize, sort, order,tmp);
+            TJ=tmp[0];
+            long executionTime = System.nanoTime() - start;
+            TS=executionTime;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        //stop timing
+        String out="{\"EndTime\":"+String.valueOf(System.nanoTime())+","+"\"TS\":"+String.valueOf(TS) + ","+"\"TJ\":"+String.valueOf(TJ)+"}\n";
+        System.out.println(out);
+        try {
+            filewriter.write(out);
+            filewriter.flush();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         return sr;
     }
 

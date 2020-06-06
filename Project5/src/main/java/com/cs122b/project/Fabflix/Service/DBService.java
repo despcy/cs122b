@@ -136,8 +136,9 @@ public class DBService {
     }
 
     public SearchResponse getSearchResult2(String title, String year, String director, String starName, int page, int pagesize,
-                                          String sort, String order) throws Exception {
+                                          String sort, String order,Long[] tmp) throws Exception {
 
+        Long TJ=0l;
         ArrayList<Movie> m_list = new ArrayList<>();
         String orderByCondition = "";
         String searchCondition = "where 1=1";
@@ -230,6 +231,8 @@ public class DBService {
         }
 
 
+
+        long start = System.nanoTime();
         Connection conn=dbQueryExec.getConnection(dataSource);
         PreparedStatement stmt=dbQueryExec.prepareStatement(conn,querystr);
         System.out.println(querystr);
@@ -239,6 +242,8 @@ public class DBService {
 
 
         ResultSet q1=executeQuery(stmt);
+        long executionTime = System.nanoTime() - start;
+        TJ+=executionTime;
         long items = 0;
         while (q1.next()) {
             items = q1.getLong(1);}
@@ -251,15 +256,20 @@ public class DBService {
         querystr +=orderByCondition;
         querystr+=limitCondition;
 
-
+        start = System.nanoTime();
         stmt=dbQueryExec.prepareStatement(conn,querystr);
+        executionTime = System.nanoTime() - start;
+        TJ+=executionTime;
         for(int i=0;i<qparam.size();i++){
             stmt.setString(i+1,qparam.get(i));
         }
         stmt.setInt(qparam.size()+1,pagesize);
         stmt.setInt(qparam.size()+2,offset);
 
+        start = System.nanoTime();
         m_list = moviesFetch2(stmt,true);
+        executionTime = System.nanoTime() - start;
+        TJ+=executionTime;
         Data data = new Data();
         data.setMovies(m_list);
         data.setCurPage(page);
@@ -268,7 +278,11 @@ public class DBService {
         SearchResponse sr = new SearchResponse();
         sr.setMessage(0);
         sr.setData(data);
-        dbQueryExec.closeConn(conn);;
+        start = System.nanoTime();
+        dbQueryExec.closeConn(conn);
+        executionTime = System.nanoTime() - start;
+        TJ+=executionTime;
+        tmp[0] = TJ;
         return sr;
     }
 

@@ -89,7 +89,7 @@ public class MovieController {
                                  @RequestParam("director") String director, @RequestParam("star") String starName,
                                  @RequestParam("page") int page, @RequestParam("pagesize") int pagesize,
                                  @RequestParam("sort") String sort, @RequestParam("order") String order,@RequestHeader Map<String, String> headers) {
-        return movieService.search(title, year, director, starName, page, pagesize, sort, order);
+        return movieService.search(title, year, director, starName, page, pagesize, sort, order, headers);
     }
 
     //search movies in a genre:
