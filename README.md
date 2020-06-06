@@ -59,8 +59,8 @@ cs122b-spring20-team-60 created by GitHub Classroom
 | **Single-instance Version Test Plan**          | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
 |------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
 | Case 1: HTTP/1 thread                          | ![](./art/single-http-pool-1.png)   | 119                         | 2.934646327857861                                  | 2.7373635035199464                        | ??           |
-| Case 2: HTTP/10 threads                        | ![](./art/single-http-pool-10.png)   | 479                         | 19.105124038733923                                  | 48.15678911793612                        | ??           |
-| Case 3: HTTPS/10 threads                       | ![](./art/single-https-pool-10.png)   | 343                         | 39.919192418633656                                  | 115.3764386095759                        | ??           |
+| Case 2: HTTP/10 threads                        | ![](./art/single-http-pool-10.png)   | 189                         | 13.760883089491918                                 | 13.730279687259431                        | ??           |
+| Case 3: HTTPS/10 threads                       | ![](./art/single-https-pool-10.png)   | 175                         | 17.3745397431918                                 | 17.31245554104441                       | ??           |
 | Case 4: HTTP/10 threads/No connection pooling  | ![](./art/single-http-nopool-10.png)   | 492                         | 77.68907252533053                                  | 49.86028800994501                        | ??           |
 
 | **Scaled Version Test Plan**                   | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
