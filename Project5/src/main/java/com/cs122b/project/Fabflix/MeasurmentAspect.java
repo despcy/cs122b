@@ -19,10 +19,10 @@ import java.util.Map;
 @Component
 public class MeasurmentAspect {
 
-    public static Long TS=0l;
-    public static Long TJ=0l;
-    public static BufferedWriter filewriter;
-    public static String curfile;
+    public  Long TS=0l;
+    public  Long TJ=0l;
+    public  BufferedWriter filewriter;
+    public  String curfile;
 
     @Value("${performancePath}")
     private String logpath;
@@ -31,6 +31,7 @@ public class MeasurmentAspect {
     public void beforemeasure(Map<String, String> headers){
 
         try {
+
             if(!headers.containsKey("logfile")){
                 curfile=null;
                 return;
@@ -49,6 +50,7 @@ public class MeasurmentAspect {
 
 
             }
+
         }catch (Exception e){
             e.printStackTrace();
         }
