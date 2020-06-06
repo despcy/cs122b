@@ -7,8 +7,8 @@ cs122b-spring20-team-60 created by GitHub Classroom
     
     - #### Names: Jingwen Mo, Chenxi Yang
     
-    - #### URL: scaled: http://18.222.229.245:80  
-    original website: https://18.222.229.245:8443
+    - #### URL: scaled: http://18.220.12.68:80  
+    original website: https://18.220.12.68:8443
     
     - #### Project 5 Video Demo Link: https://youtu.be/7hC22V40CEw
 
